@@ -11,9 +11,11 @@ This guide will help you get the Ski Vacation Planner up and running in just a f
 - **OpenAI API Key** - [Get one here](https://platform.openai.com/api-keys)
   - Cost: ~$0.01-$0.05 per conversation with GPT-4
 
-### Optional (but recommended)
-- **OpenWeather API Key** - [Get one here](https://openweathermap.org/api)
-  - Free tier: 60 calls/minute, sufficient for this project
+### Weather API (No Setup Needed!)
+- **Open-Meteo** - Free, open-source weather API
+- ✅ NO API key required
+- ✅ NO credit card required
+- ✅ Works immediately out of the box!
 
 ## Installation Steps
 
@@ -47,15 +49,13 @@ Edit `backend/.env` with your favorite text editor and add:
 # REQUIRED
 OPENAI_API_KEY=sk-proj-your-actual-key-here
 
-# OPTIONAL (but recommended for full functionality)
-OPENWEATHER_API_KEY=your-weather-key-here
-
 # OPTIONAL (defaults to 3005)
 PORT=3005
 ```
 
 **Important:**
 - Your OpenAI API key should start with `sk-`
+- Weather API (Open-Meteo) requires NO configuration!
 - Don't share your `.env` file or commit it to git (it's already in .gitignore)
 
 ### 3. Verify Setup
@@ -103,7 +103,7 @@ You should see the Ski Vacation Planner chat interface!
 What are the best ski resorts for beginners in Europe?
 ```
 
-**Weather Query (uses OpenWeather API):**
+**Weather Query (uses Open-Meteo API):**
 ```
 What's the weather like in Aspen right now?
 ```
@@ -172,7 +172,7 @@ The assistant uses **GPT-4's function calling** to automatically decide when to 
 1. You ask: "What's the weather in Aspen?"
 2. GPT-4 thinks: "I need real-time weather data"
 3. GPT-4 calls: `get_weather("Aspen")`
-4. Backend executes the OpenWeather API call
+4. Backend executes the Open-Meteo API call
 5. GPT-4 receives data and formats a natural response
 6. You see: "The weather in Aspen is currently -2°C with light snow..."
 
@@ -182,7 +182,7 @@ The assistant uses **GPT-4's function calling** to automatically decide when to 
 
 ### 1. Real-time Data Integration
 Look for the badges:
-- 🌨️ **Live Weather** - Data from OpenWeather API
+- 🌨️ **Live Weather** - Data from Open-Meteo API
 - 💰 **Currency Data** - Real exchange rates
 
 ### 2. Hallucination Detection
@@ -213,7 +213,7 @@ For complex queries, the assistant shows its reasoning process.
 
 ### Weather queries return errors
 
-- Verify your OpenWeather API key
+- Verify your Open-Meteo API key
 - Check if the key is activated (can take a few minutes after signup)
 - The app works without weather API, but with limited functionality
 

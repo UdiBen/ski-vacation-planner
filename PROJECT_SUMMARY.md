@@ -12,7 +12,7 @@ The **Ski Vacation Planner** is an intelligent conversational AI assistant built
 - **Framework:** Express.js
 - **LLM:** OpenAI GPT-4 Turbo
 - **APIs:**
-  - OpenWeather API (weather data)
+  - Open-Meteo API (weather data)
   - Exchange Rate API (currency conversion)
 
 ### Frontend
@@ -119,7 +119,7 @@ User: "How much in local currency?"
 
 ### 5. Three Query Type Categories
 
-**Type 1: Weather Queries** → OpenWeather API
+**Type 1: Weather Queries** → Open-Meteo API
 - "What's the weather in Chamonix?"
 - "Show me snow forecast for Aspen"
 - Demonstrates real-time data integration
@@ -162,7 +162,7 @@ User: "How much in local currency?"
 │         │                      │                  │
 │  ┌──────▼──────────┐  ┌────────▼──────────────┐  │
 │  │ Weather Service │  │ Currency Service      │  │
-│  │ • OpenWeather   │  │ • Exchange Rate API   │  │
+│  │ • Open-Meteo   │  │ • Exchange Rate API   │  │
 │  │ • Ski conditions│  │ • Multi-currency      │  │
 │  └─────────────────┘  └───────────────────────┘  │
 │                                                   │
@@ -192,7 +192,7 @@ ski-vacation-planner/
 │   │   │   └── chat.controller.ts          # API endpoints
 │   │   ├── services/
 │   │   │   ├── llm.service.ts              # GPT-4 + function calling
-│   │   │   ├── weather.service.ts          # OpenWeather integration
+│   │   │   ├── weather.service.ts          # Open-Meteo integration
 │   │   │   ├── currency.service.ts         # Currency API
 │   │   │   ├── conversation.service.ts     # Context management
 │   │   │   └── hallucination.service.ts    # Detection logic
@@ -274,7 +274,7 @@ npm run dev
 - **Architecture:** RESTful API with proper separation of concerns
 
 ### ✅ External Data Integration
-- **Two APIs:** OpenWeather (weather) + Exchange Rate (currency)
+- **Two APIs:** Open-Meteo (weather) + Exchange Rate (currency)
 - **Data Fusion:** LLM knowledge + real-time API data in responses
 - **Decision Logic:** Function calling - LLM autonomously decides when to use APIs
 
@@ -336,7 +336,7 @@ Expected: Step-by-step analysis with reasoning
 ## Limitations & Future Enhancements
 
 ### Current Limitations
-- Weather data limited to OpenWeather API coverage
+- Weather data limited to Open-Meteo API coverage
 - Currency conversion doesn't account for transaction fees
 - No persistent storage (conversations lost on refresh)
 - English language only

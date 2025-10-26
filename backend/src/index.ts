@@ -61,7 +61,7 @@ app.listen(PORT, () => {
   console.log(`   GET  /api/conversations/:id - Get conversation history`);
   console.log(`\n⚙️  Configuration:`);
   console.log(`   OpenAI API: ${process.env.OPENAI_API_KEY ? '✓ Configured' : '✗ Missing'}`);
-  console.log(`   Weather API: ${process.env.OPENWEATHER_API_KEY ? '✓ Configured' : '✗ Missing (optional)'}`);
+  console.log(`   Weather API: ✓ Open-Meteo (no API key required)`);
   console.log(`\n`);
 });
 

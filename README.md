@@ -12,7 +12,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 ### Core Functionality
 - **Intelligent Conversational AI**: Multi-turn conversations with context awareness
 - **Function Calling**: Automatic API routing based on user queries
-- **Real-time Weather Data**: Live ski conditions from OpenWeather API
+- **Real-time Weather Data**: Live ski conditions from Open-Meteo API
 - **Currency Conversion**: Up-to-date exchange rates for travel planning
 - **Hallucination Detection**: Multi-layered approach to detect and warn about unreliable information
 - **Chain-of-Thought Reasoning**: Step-by-step analysis for complex queries
@@ -58,7 +58,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 └───┬─────────────────────────────┬───┘
     │                             │
 ┌───▼─────────┐         ┌─────────▼───┐
-│ OpenWeather │         │  Exchange   │
+│ Open-Meteo │         │  Exchange   │
 │     API     │         │   Rate API  │
 └─────────────┘         └─────────────┘
 ```
@@ -68,7 +68,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 ### Prerequisites
 - Node.js 18+ and npm
 - OpenAI API key (required)
-- OpenWeather API key (optional but recommended)
+- Open-Meteo API key (optional but recommended)
 
 ### Installation
 
@@ -116,7 +116,7 @@ This will start:
 2. Create a new API key
 3. Add to `backend/.env` as `OPENAI_API_KEY`
 
-**OpenWeather (Optional but recommended):**
+**Open-Meteo (Optional but recommended):**
 1. Go to https://openweathermap.org/api
 2. Sign up for a free account
 3. Get your API key
@@ -232,7 +232,7 @@ Assistant: [knows "there" refers to previously mentioned resort]
 
 ## 🎯 Three Query Types Demonstrated
 
-1. **Weather Queries** → OpenWeather API
+1. **Weather Queries** → Open-Meteo API
    - "What's the weather in Chamonix?"
    - "Show me the snow forecast for Aspen"
 
@@ -352,7 +352,7 @@ Assistant: [knows context is France, converts EUR to EUR]
 - Express backend
 
 ### ✅ External Data Integration
-- OpenWeather API for weather data
+- Open-Meteo API for weather data
 - Exchange Rate API for currency
 - Clear decision logic via function calling
 - Data fusion in responses
@@ -444,7 +444,7 @@ MIT License - see LICENSE file for details
 ## 🙏 Acknowledgments
 
 - OpenAI for GPT-4 API
-- OpenWeather for weather data API
+- Open-Meteo for weather data API
 - Exchange Rate API for currency data
 - Course instructors for the assignment specification
 

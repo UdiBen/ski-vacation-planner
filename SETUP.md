@@ -8,7 +8,7 @@ Before you begin, ensure you have:
 - **Node.js** version 18 or higher ([Download](https://nodejs.org/))
 - **npm** (comes with Node.js)
 - **OpenAI API Key** (Required - [Get one here](https://platform.openai.com/api-keys))
-- **OpenWeather API Key** (Optional but recommended - [Get one here](https://openweathermap.org/api))
+- **Open-Meteo API Key** (Optional but recommended - [Get one here](https://openweathermap.org/api))
 
 ## Step-by-Step Setup
 
@@ -57,8 +57,8 @@ PORT=3005
 
 **Important Notes:**
 - **OpenAI API Key is REQUIRED** - The application won't work without it
-- OpenWeather API Key is optional but highly recommended for full functionality
-- The free tier of OpenWeather API is sufficient for this project
+- Open-Meteo API Key is optional but highly recommended for full functionality
+- The free tier of Open-Meteo API is sufficient for this project
 
 ### 3. Verify Configuration
 
@@ -150,7 +150,7 @@ lsof -ti:3000 | xargs kill
 - "Weather API error" messages
 
 **Solution:**
-- Verify your OpenWeather API key is correct
+- Verify your Open-Meteo API key is correct
 - Check if your API key is activated (can take a few minutes after signup)
 - Free tier has a limit of 60 calls/minute - check if you've exceeded it
 - The application will still work without weather API, but functionality is limited
