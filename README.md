@@ -10,14 +10,16 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 ## 🌟 Features
 
 ### Core Functionality
-- **Intelligent Conversational AI**: Multi-turn conversations with context awareness
+
+- **Intelligent Conversational AI**: Multi-turn conversations with OpenAI-managed state
 - **Function Calling**: Automatic API routing based on user queries
 - **Real-time Weather Data**: Live ski conditions from Open-Meteo API
 - **Currency Conversion**: Up-to-date exchange rates for travel planning
-- **Hallucination Detection**: Multi-layered approach to detect and warn about unreliable information
-- **Chain-of-Thought Reasoning**: Step-by-step analysis for complex queries
+- **Hallucination Detection**: 2-layer approach (heuristics + LLM judge)
+- **Reasoning Extraction**: Model's thought process logged to console in real-time
 
 ### Technical Highlights
+
 - **Advanced Prompt Engineering**: Carefully crafted system prompts to guide LLM behavior
 - **Context Management**: Tracks user preferences, locations, and conversation history
 - **Beautiful Chat UI**: Modern React interface with Tailwind CSS
@@ -38,21 +40,17 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 │   Express Backend (Port 3005)       │
 │                                     │
 │  ┌──────────────────────────────┐  │
-│  │  Conversation Manager         │  │
-│  │  - Context Tracking           │  │
-│  │  - History Management         │  │
-│  └──────────────────────────────┘  │
-│                                     │
-│  ┌──────────────────────────────┐  │
-│  │  LLM Service (Function Call)  │  │
+│  │  LLM Service (Responses API)  │  │
 │  │  - GPT-5 Integration          │  │
-│  │  - Tool Routing               │  │
+│  │  - Function Calling           │  │
+│  │  - Reasoning Extraction       │  │
+│  │  (State managed by OpenAI)    │  │
 │  └──────────────────────────────┘  │
 │                                     │
 │  ┌──────────────────────────────┐  │
 │  │  Hallucination Detection      │  │
-│  │  - Heuristic Analysis         │  │
-│  │  - LLM Verification           │  │
+│  │  - Heuristic Analysis (40%)   │  │
+│  │  - LLM Judge (60%)            │  │
 │  └──────────────────────────────┘  │
 │                                     │
 └───┬─────────────────────────────┬───┘
@@ -61,66 +59,82 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 │ Open-Meteo │         │  Exchange   │
 │     API     │         │   Rate API  │
 └─────────────┘         └─────────────┘
+         │                      │
+         └──────────┬───────────┘
+                    │
+            ┌───────▼────────┐
+            │  OpenAI        │
+            │  Responses API │
+            │  (Manages      │
+            │   conversation │
+            │   state)       │
+            └────────────────┘
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - OpenAI API key (required)
-- Open-Meteo API key (optional but recommended)
 
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone <your-repo-url>
 cd ski-vacation-planner
 ```
 
 2. **Install all dependencies**
+
 ```bash
 npm run install:all
 ```
 
 3. **Set up environment variables**
+
 ```bash
 # Backend configuration
 cd backend
 cp .env.example .env
-# Edit .env and add your API keys:
+# Edit .env and add your API key:
 # OPENAI_API_KEY=your_openai_key_here
-# OPENWEATHER_API_KEY=your_openweather_key_here (optional)
 cd ..
 ```
 
 4. **Verify setup (optional but recommended)**
+
 ```bash
 ./verify-setup.sh
 ```
+
 This script checks that all dependencies are installed and API keys are configured.
 
 5. **Start the application**
+
 ```bash
 npm run dev
 ```
 
 This will start:
+
 - Backend API on http://localhost:3005
 - Frontend on http://localhost:3000
 
 ### Getting API Keys
 
 **OpenAI (Required):**
+
 1. Go to https://platform.openai.com/api-keys
 2. Create a new API key
 3. Add to `backend/.env` as `OPENAI_API_KEY`
 
-**Open-Meteo (Optional but recommended):**
-1. Go to https://openweathermap.org/api
-2. Sign up for a free account
-3. Get your API key
-4. Add to `backend/.env` as `OPENWEATHER_API_KEY`
+**Weather Data:**
+
+- The app uses Open-Meteo API which is free and requires no API key
+- Documentation: https://open-meteo.com/
 
 ## 📖 How It Works
 
@@ -150,6 +164,7 @@ const tools = [
 ```
 
 **Decision Logic Flow:**
+
 1. User sends query
 2. LLM analyzes query with available tools
 3. If external data needed → LLM requests function call
@@ -160,6 +175,7 @@ const tools = [
 ### 2. Advanced Prompt Engineering
 
 **System Prompt Strategy:**
+
 - Clear role definition
 - Explicit instructions for when to use functions
 - Anti-hallucination directives
@@ -167,6 +183,7 @@ const tools = [
 - Citation requirements
 
 Key techniques:
+
 - **Instruction Hierarchies**: Critical rules emphasized with IMPORTANT tags
 - **Few-shot Examples**: Implicit learning through prompt structure
 - **Constraint Setting**: Temperature tuning and explicit boundaries
@@ -189,40 +206,68 @@ Assistant's internal process:
 
 ### 4. Hallucination Detection & Management
 
-**Three-Layer Approach:**
+**Two-Layer Approach:**
 
-**Layer 1: Heuristic Detection (Fast)**
+**Layer 1: Heuristic Detection (Fast, Rule-Based)**
+
 - Checks for specific numbers without API calls
 - Detects weather/currency data without source verification
-- Identifies uncertain language patterns
-- Flags overly precise data
+- Identifies uncertain language patterns ("probably", "might be")
+- Flags overly precise data without sources
+- Provides 40% weight in final assessment
 
-**Layer 2: Function Call Verification**
-- Compares response content with API call results
-- Ensures cited data matches retrieved data
-- Validates consistency
+**Layer 2: LLM as Judge (Comprehensive Analysis)**
 
-**Layer 3: LLM-based Analysis (Deep)**
-- Uses GPT-3.5 to analyze borderline cases
+- Uses GPT-5-mini to evaluate responses for hallucinations
+- Checks logical consistency and contradictions
+- Validates that data sources match claimed information
+- Detects fabricated vs. uncertain language
 - Structured JSON output with confidence scores
-- Provides actionable suggestions (warn/block/verify)
+- Provides 60% weight in final assessment
+- Actionable suggestions (none/warn/block)
+
+**Combined Decision:**
+
+- Both layers run for every response
+- Results weighted and combined (40% heuristic, 60% LLM judge)
+- Takes most severe action recommended by either layer
+- Real-time reasoning process logged to backend console
 
 **User Experience:**
+
 - Yellow warning badges for suspected hallucinations
 - Data source indicators (Weather/Currency badges)
 - Confidence scores
 - Explicit "verify important details" messaging
 
-### 5. Context Management
+### 5. Context Management (OpenAI Responses API)
 
-The system tracks conversation context:
-- User's ski skill level (beginner/intermediate/advanced)
-- Budget mentions
-- Travel dates
-- Previously mentioned resorts and countries
-- Conversation history (last 10 messages)
+The system uses OpenAI's Responses API for server-side conversation state management:
+
+- Conversation history maintained by OpenAI via `previous_response_id`
+- No need for local message storage
+- Efficient state tracking across multiple turns
+- Seamless context continuity
+
+**How it works:**
+```typescript
+// First message
+const response1 = await openai.responses.create({
+  input: "I'm a beginner looking for ski resorts",
+  store: true
+});
+// OpenAI stores: response1.id
+
+// Follow-up message
+const response2 = await openai.responses.create({
+  input: "What about the weather there?",
+  previous_response_id: response1.id  // OpenAI knows full context
+});
+// OpenAI automatically maintains conversation state
+```
 
 This enables natural follow-up questions:
+
 ```
 User: "I'm a beginner looking for ski resorts"
 Assistant: [recommends beginner-friendly resorts]
@@ -253,11 +298,10 @@ ski-vacation-planner/
 │   │   ├── controllers/
 │   │   │   └── chat.controller.ts      # API endpoints
 │   │   ├── services/
-│   │   │   ├── llm.service.ts          # GPT-5 integration
+│   │   │   ├── llm.service.ts          # GPT-5 Responses API integration
 │   │   │   ├── weather.service.ts      # Weather API wrapper
 │   │   │   ├── currency.service.ts     # Currency API wrapper
-│   │   │   ├── conversation.service.ts # Context management
-│   │   │   └── hallucination.service.ts# Detection logic
+│   │   │   └── hallucination.service.ts# 2-layer detection logic
 │   │   ├── models/
 │   │   ├── utils/
 │   │   │   └── prompts.ts              # Prompt templates
@@ -296,6 +340,7 @@ ski-vacation-planner/
 Try these queries to see different features:
 
 ### Basic Queries
+
 ```
 "What are the best ski resorts for beginners?"
 "Tell me about Whistler Blackcomb"
@@ -303,6 +348,7 @@ Try these queries to see different features:
 ```
 
 ### Weather API Integration
+
 ```
 "What's the weather in Chamonix right now?"
 "Show me the snow forecast for Zermatt"
@@ -310,6 +356,7 @@ Try these queries to see different features:
 ```
 
 ### Currency API Integration
+
 ```
 "Convert 1000 USD to Swiss Francs"
 "How much is 500 EUR in Canadian dollars?"
@@ -317,6 +364,7 @@ Try these queries to see different features:
 ```
 
 ### Complex Multi-Step Queries
+
 ```
 "I'm an intermediate skier with a $3000 budget. Where should I go in March?"
 "Compare the weather in Aspen vs Vail for next week"
@@ -324,6 +372,7 @@ Try these queries to see different features:
 ```
 
 ### Context Follow-ups
+
 ```
 User: "Tell me about Chamonix"
 Assistant: [provides information]
@@ -336,28 +385,33 @@ Assistant: [knows context is France, converts EUR to EUR]
 ## 🎓 Assignment Requirements Coverage
 
 ### ✅ Conversation-Oriented Design
+
 - Handles 3+ types of queries (weather, currency, planning)
 - Multi-turn conversation with context tracking
 - Natural, helpful interaction flow
 
 ### ✅ Advanced Prompt Engineering
+
 - Thoughtful system prompts in `utils/prompts.ts`
 - Chain-of-thought implementation for complex queries
 - Control strategies to reduce hallucinations
 
 ### ✅ Technical Implementation
+
 - TypeScript for type safety
 - GPT-5o via OpenAI API
 - React chat interface (better than CLI)
 - Express backend
 
 ### ✅ External Data Integration
+
 - Open-Meteo API for weather data
 - Exchange Rate API for currency
 - Clear decision logic via function calling
 - Data fusion in responses
 
 ### ✅ Hallucination Detection & Management
+
 - Heuristic analysis
 - LLM-based verification
 - User warnings and data source indicators
@@ -390,48 +444,55 @@ npm start
 ### Environment Variables
 
 **Backend (.env):**
+
 ```
 OPENAI_API_KEY=sk-...          # Required
-OPENWEATHER_API_KEY=...        # Optional
 PORT=3005                      # Optional, defaults to 3005
 ```
 
 ### Customization
 
 **Adjust LLM behavior** in `backend/src/services/llm.service.ts`:
+
 - Model selection (gpt-5, gpt-5-mini, etc.)
 - Temperature (0.7 default)
 - Token limits
 
 **Modify prompts** in `backend/src/utils/prompts.ts`:
+
 - System prompt for different behavior
 - Hallucination detection sensitivity
 
 **Tweak hallucination detection** in `backend/src/services/hallucination.service.ts`:
+
 - Heuristic thresholds
 - Detection patterns
 
 ## 📊 Evaluation Criteria Demonstration
 
 ### 1. Conversation Quality
+
 - Natural language understanding
 - Context awareness across turns
 - Helpful, accurate responses
 - Engaging personality
 
 ### 2. Hallucination Handling
+
 - Multi-layer detection system
 - User warnings when confidence is low
 - Data source transparency
 - Graceful degradation
 
 ### 3. Context Management
+
 - Tracks user preferences
 - Remembers previous topics
 - Handles follow-up questions
 - Maintains conversation state
 
 ### 4. External Data Integration
+
 - Seamless API integration
 - Real-time data fusion
 - Accurate attribution
@@ -451,6 +512,7 @@ MIT License - see LICENSE file for details
 ## 📸 Sample Conversation Transcripts
 
 See `docs/sample-conversations.md` for example interactions demonstrating:
+
 - Weather queries with API integration
 - Currency conversions
 - Multi-turn planning conversations

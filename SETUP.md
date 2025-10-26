@@ -5,10 +5,10 @@ Quick setup guide to get the application running on your machine.
 ## Prerequisites
 
 Before you begin, ensure you have:
+
 - **Node.js** version 18 or higher ([Download](https://nodejs.org/))
 - **npm** (comes with Node.js)
 - **OpenAI API Key** (Required - [Get one here](https://platform.openai.com/api-keys))
-- **Open-Meteo API Key** (Optional but recommended - [Get one here](https://openweathermap.org/api))
 
 ## Step-by-Step Setup
 
@@ -21,11 +21,13 @@ npm run install:all
 ```
 
 This will install dependencies for:
+
 - Root project
 - Backend server
 - Frontend application
 
 **Expected output:**
+
 ```
 ✓ Root dependencies installed
 ✓ Backend dependencies installed
@@ -41,24 +43,21 @@ cd backend
 cp .env.example .env
 ```
 
-Edit `backend/.env` and add your API keys:
+Edit `backend/.env` and add your API key:
 
 ```env
 # REQUIRED: Get from https://platform.openai.com/api-keys
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxx
-
-# OPTIONAL: Get from https://openweathermap.org/api
-# Without this, weather features will be limited
-OPENWEATHER_API_KEY=xxxxxxxxxxxxxxxxxxxxx
 
 # OPTIONAL: Server port (defaults to 3005)
 PORT=3005
 ```
 
 **Important Notes:**
+
 - **OpenAI API Key is REQUIRED** - The application won't work without it
-- Open-Meteo API Key is optional but highly recommended for full functionality
-- The free tier of Open-Meteo API is sufficient for this project
+- Weather data is provided by Open-Meteo (no API key needed)
+- Open-Meteo is a free, open-source weather API: https://open-meteo.com/
 
 ### 3. Verify Configuration
 
@@ -81,10 +80,12 @@ npm run dev
 ```
 
 This single command starts both:
+
 - **Backend API** on http://localhost:3005
 - **Frontend** on http://localhost:3000
 
 **You should see:**
+
 ```
 🎿 Ski Vacation Planner API running on http://localhost:3005
 
@@ -96,7 +97,7 @@ This single command starts both:
 
 ⚙️  Configuration:
    OpenAI API: ✓ Configured
-   Weather API: ✓ Configured
+   Weather API: Open-Meteo (no key required)
 
 [Frontend]
   ➜  Local:   http://localhost:3000/
@@ -113,6 +114,7 @@ This single command starts both:
 ### Issue: "OPENAI_API_KEY is required"
 
 **Solution:**
+
 - Verify your `.env` file exists in the `backend/` directory
 - Check that `OPENAI_API_KEY` is spelled correctly
 - Ensure there are no spaces around the `=` sign
@@ -121,6 +123,7 @@ This single command starts both:
 ### Issue: "Cannot find module" errors
 
 **Solution:**
+
 ```bash
 # Clean install
 rm -rf node_modules backend/node_modules frontend/node_modules
@@ -133,6 +136,7 @@ npm run install:all
 If port 3000 or 3005 is already in use:
 
 **Option 1:** Kill the process using the port
+
 ```bash
 # On macOS/Linux
 lsof -ti:3005 | xargs kill
@@ -140,24 +144,29 @@ lsof -ti:3000 | xargs kill
 ```
 
 **Option 2:** Change the ports
+
 - Backend: Edit `backend/.env` and set `PORT=3002`
 - Frontend: Edit `frontend/vite.config.ts` and change port to 3005
 
 ### Issue: Weather API not working
 
 **Symptoms:**
+
 - Weather queries return errors
 - "Weather API error" messages
 
 **Solution:**
-- Verify your Open-Meteo API key is correct
-- Check if your API key is activated (can take a few minutes after signup)
-- Free tier has a limit of 60 calls/minute - check if you've exceeded it
-- The application will still work without weather API, but functionality is limited
+
+- Open-Meteo API is free and requires no API key
+- Check your internet connection
+- Verify the location/resort name is valid
+- Check the backend logs for specific error messages
+- Open-Meteo has rate limits - if exceeded, wait a moment and try again
 
 ### Issue: TypeScript compilation errors
 
 **Solution:**
+
 ```bash
 # Backend
 cd backend
@@ -173,6 +182,7 @@ Check the error messages and ensure all dependencies are installed.
 ### Issue: React app shows blank page
 
 **Solution:**
+
 1. Open browser console (F12) and check for errors
 2. Verify backend is running on port 3005
 3. Check CORS configuration if accessing from different origin
@@ -183,6 +193,7 @@ Check the error messages and ensure all dependencies are installed.
 If you need to run backend and frontend separately:
 
 ### Backend Only
+
 ```bash
 npm run dev:backend
 # or
@@ -190,6 +201,7 @@ cd backend && npm run dev
 ```
 
 ### Frontend Only
+
 ```bash
 npm run dev:frontend
 # or
@@ -199,16 +211,19 @@ cd frontend && npm run dev
 ## Building for Production
 
 ### Build All
+
 ```bash
 npm run build
 ```
 
 ### Run Production Server
+
 ```bash
 npm start
 ```
 
 This will:
+
 1. Compile TypeScript for backend
 2. Build optimized React app
 3. Start production server
@@ -216,11 +231,13 @@ This will:
 ## Testing the APIs Directly
 
 ### Health Check
+
 ```bash
 curl http://localhost:3005/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "healthy",
@@ -229,6 +246,7 @@ Expected response:
 ```
 
 ### Send a Test Message
+
 ```bash
 curl -X POST http://localhost:3005/api/chat \
   -H "Content-Type: application/json" \
@@ -238,17 +256,22 @@ curl -X POST http://localhost:3005/api/chat \
 ## Development Tips
 
 ### Hot Reloading
+
 Both backend and frontend support hot reloading:
+
 - **Backend:** Uses `tsx watch` - saves to `.ts` files auto-restart
 - **Frontend:** Uses Vite HMR - saves update instantly in browser
 
 ### Logging
+
 Backend logs are printed to console:
+
 - API calls
 - Function executions
 - Errors
 
 ### Browser DevTools
+
 - Open React DevTools for component inspection
 - Use Network tab to see API calls
 - Console shows any frontend errors

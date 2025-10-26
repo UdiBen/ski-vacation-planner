@@ -74,17 +74,9 @@ if [ -f "backend/.env" ]; then
         echo -e "${RED}✗ Not configured${NC}"
         echo "  Add your OpenAI API key to backend/.env"
     fi
-
-    # Check for OPENWEATHER_API_KEY
-    echo -n "Checking OPENWEATHER_API_KEY... "
-    if grep -q "OPENWEATHER_API_KEY=" backend/.env && ! grep -q "OPENWEATHER_API_KEY=$" backend/.env; then
-        echo -e "${GREEN}✓${NC} Configured"
-    else
-        echo -e "${YELLOW}⚠${NC} Not configured (optional)"
-    fi
 else
     echo -e "${RED}✗ Not found${NC}"
-    echo "  Copy backend/.env.example to backend/.env and configure API keys"
+    echo "  Copy backend/.env.example to backend/.env and configure API key"
 fi
 
 # Try to compile TypeScript
@@ -145,7 +137,6 @@ else
         echo "To configure API keys:"
         echo "  1. Copy backend/.env.example to backend/.env"
         echo "  2. Add your OPENAI_API_KEY (required)"
-        echo "  3. Add your OPENWEATHER_API_KEY (optional)"
         echo ""
     fi
 fi

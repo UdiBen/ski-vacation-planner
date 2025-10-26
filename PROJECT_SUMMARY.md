@@ -7,6 +7,7 @@ The **Ski Vacation Planner** is an intelligent conversational AI assistant built
 ## Technology Stack
 
 ### Backend
+
 - **Runtime:** Node.js 18+
 - **Language:** TypeScript
 - **Framework:** Express.js
@@ -16,6 +17,7 @@ The **Ski Vacation Planner** is an intelligent conversational AI assistant built
   - Exchange Rate API (currency conversion)
 
 ### Frontend
+
 - **Framework:** React 18
 - **Language:** TypeScript
 - **Build Tool:** Vite
@@ -25,6 +27,7 @@ The **Ski Vacation Planner** is an intelligent conversational AI assistant built
 ## Key Features
 
 ### 1. Intelligent Function Calling
+
 The system uses OpenAI's function calling feature to automatically determine when to use external APIs:
 
 ```typescript
@@ -41,6 +44,7 @@ tools = [
 ```
 
 **Benefits:**
+
 - No manual intent classification needed
 - Handles ambiguous queries intelligently
 - Can chain multiple API calls
@@ -49,6 +53,7 @@ tools = [
 ### 2. Advanced Prompt Engineering
 
 **System Prompt Techniques:**
+
 - Clear role definition and constraints
 - Explicit function usage instructions
 - Anti-hallucination directives (cite sources, acknowledge uncertainty)
@@ -56,6 +61,7 @@ tools = [
 - Temperature tuning (0.7 for conversational yet focused responses)
 
 **Key Strategies:**
+
 ```typescript
 // Emphasis on data verification
 "IMPORTANT: When users ask about weather or snow conditions,
@@ -73,22 +79,26 @@ tools = [
 ### 3. Multi-Layer Hallucination Detection
 
 **Layer 1: Heuristic Analysis (Fast)**
+
 - Detects specific numbers without corresponding API calls
 - Identifies weather/currency terms without data retrieval
 - Flags uncertain language patterns ("probably", "around", etc.)
 - Checks for overly precise data without sources
 
 **Layer 2: Function Call Verification**
+
 - Cross-references response content with API data
 - Ensures cited information matches retrieved data
 - Validates consistency between claim and source
 
 **Layer 3: LLM-based Deep Analysis**
+
 - Uses GPT-3.5 for borderline cases
 - Structured JSON output with confidence scores
 - Provides actionable recommendations (warn/block/verify)
 
 **User Experience:**
+
 - Yellow warning badges for suspected hallucinations
 - Confidence scores displayed
 - Data source indicators (Weather/Currency badges)
@@ -99,6 +109,7 @@ tools = [
 The system maintains rich conversational context:
 
 **Tracked Information:**
+
 - User ski skill level (beginner/intermediate/advanced)
 - Budget mentions
 - Travel dates and timeframes
@@ -106,6 +117,7 @@ The system maintains rich conversational context:
 - Conversation history (last 10 messages)
 
 **Benefits:**
+
 ```
 User: "I'm a beginner looking for resorts in Europe"
 [Context: skill=beginner, region=Europe]
@@ -120,16 +132,19 @@ User: "How much in local currency?"
 ### 5. Three Query Type Categories
 
 **Type 1: Weather Queries** → Open-Meteo API
+
 - "What's the weather in Chamonix?"
 - "Show me snow forecast for Aspen"
 - Demonstrates real-time data integration
 
 **Type 2: Currency Queries** → Exchange Rate API
+
 - "Convert 1000 USD to CHF"
 - "What's the exchange rate for EUR to CAD?"
 - Demonstrates financial data integration
 
 **Type 3: Planning Recommendations** → LLM + APIs
+
 - "Best ski resorts for beginners in Europe?"
 - "Where should I go in February with good snow?"
 - Demonstrates hybrid approach (knowledge + live data)
@@ -238,47 +253,53 @@ ski-vacation-planner/
 ## Installation & Running
 
 ### Quick Start
+
 ```bash
 # Install all dependencies
 npm run install:all
 
-# Configure backend/.env with API keys
+# Configure backend/.env with API key
 # OPENAI_API_KEY=sk-...
-# OPENWEATHER_API_KEY=...
 
 # Start everything
 npm run dev
 ```
 
 **Access:**
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:3005
 
 ## Assignment Requirements Fulfillment
 
 ### ✅ Conversation-Oriented Design
+
 - **Assistant Purpose:** Ski vacation planning with weather, currency, and recommendations
 - **Three Query Types:** Weather, currency, planning advice
 - **Context & Continuity:** Tracks preferences, mentions, conversation history
 - **Interaction Flow:** Natural multi-turn conversations with follow-ups
 
 ### ✅ Advanced Prompt Engineering
+
 - **Prompt Crafting:** System prompts in `utils/prompts.ts` with explicit instructions
 - **Multi-Step Reasoning:** Chain-of-thought for complex planning queries
 - **Control Strategies:** Anti-hallucination directives, uncertainty acknowledgment, citation requirements
 
 ### ✅ Technical Implementation
+
 - **Language:** TypeScript (Node.js + React)
 - **LLM:** OpenAI GPT-5 via official SDK
 - **Interface:** React web UI (exceeds CLI requirement)
 - **Architecture:** RESTful API with proper separation of concerns
 
 ### ✅ External Data Integration
+
 - **Two APIs:** Open-Meteo (weather) + Exchange Rate (currency)
 - **Data Fusion:** LLM knowledge + real-time API data in responses
 - **Decision Logic:** Function calling - LLM autonomously decides when to use APIs
 
 ### ✅ Hallucination Detection & Management
+
 - **Detection Methods:**
   - Heuristic analysis (fast)
   - Function call verification
@@ -303,18 +324,21 @@ npm run dev
 ## Testing Recommendations
 
 ### Weather Integration Test
+
 ```
 User: "What's the weather in Aspen?"
 Expected: Real-time data with badge indicator
 ```
 
 ### Currency Integration Test
+
 ```
 User: "Convert 1000 USD to CHF"
 Expected: Live exchange rate with badge indicator
 ```
 
 ### Context Awareness Test
+
 ```
 User: "I'm a beginner looking for resorts"
 User: "What about the weather there?"
@@ -322,12 +346,14 @@ Expected: System remembers previous resort mention
 ```
 
 ### Hallucination Detection Test
+
 ```
 Try queries that might tempt the LLM to make up data
 Expected: Warnings if unverified information appears
 ```
 
 ### Multi-Step Reasoning Test
+
 ```
 User: "Where should I go skiing in February with $3000?"
 Expected: Step-by-step analysis with reasoning
@@ -336,12 +362,14 @@ Expected: Step-by-step analysis with reasoning
 ## Limitations & Future Enhancements
 
 ### Current Limitations
+
 - Weather data limited to Open-Meteo API coverage
 - Currency conversion doesn't account for transaction fees
 - No persistent storage (conversations lost on refresh)
 - English language only
 
 ### Potential Enhancements
+
 - Database integration for conversation persistence
 - Multi-language support
 - Integration with booking APIs
@@ -354,11 +382,13 @@ Expected: Step-by-step analysis with reasoning
 ## Performance Metrics
 
 **Build Times:**
+
 - Backend compile: ~2 seconds
 - Frontend build: ~1.5 seconds
 - Total install time: ~2-3 minutes
 
 **Runtime Performance:**
+
 - Initial response time: 2-5 seconds (LLM latency)
 - With API calls: 3-7 seconds (includes external API)
 - UI responsiveness: <100ms (React)
@@ -374,6 +404,7 @@ Expected: Step-by-step analysis with reasoning
 ## Academic Value
 
 This project demonstrates:
+
 1. **Practical LLM Integration**: Real-world use of GPT-4 API
 2. **Prompt Engineering Skills**: Thoughtful system prompt design
 3. **API Orchestration**: Multiple external services working together
