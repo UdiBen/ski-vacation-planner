@@ -1,6 +1,6 @@
-import OpenAI from 'openai';
-import { HallucinationDetectionResult } from '../types';
-import { LLM_JUDGE_PROMPT } from '../utils/prompts';
+import OpenAI from "openai";
+import { HallucinationDetectionResult } from "../types";
+import { LLM_JUDGE_PROMPT } from "../utils/prompts";
 
 export class HallucinationDetectionService {
   private openai: OpenAI;
@@ -8,7 +8,7 @@ export class HallucinationDetectionService {
   constructor() {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY is required');
+      throw new Error("OPENAI_API_KEY is required");
     }
     this.openai = new OpenAI({ apiKey });
   }
@@ -17,21 +17,27 @@ export class HallucinationDetectionService {
     response: string,
     functionCalls?: any[]
   ): Promise<HallucinationDetectionResult> {
-    console.log('🔍 Starting 2-layer hallucination detection...');
+    console.log("🔍 Starting 2-layer hallucination detection...");
 
     // Layer 1: Quick heuristic checks first (faster than LLM call)
-    console.log('  Layer 1: Running heuristic analysis...');
+    console.log("  Layer 1: Running heuristic analysis...");
     const heuristicResult = this.heuristicCheck(response, functionCalls);
-    console.log(`  Layer 1: Confidence=${heuristicResult.confidence.toFixed(2)}, Flagged=${heuristicResult.isLikelyHallucination}`);
+    console.log(
+      `  Layer 1: Confidence=${heuristicResult.confidence.toFixed(2)}, Flagged=${heuristicResult.isLikelyHallucination}`
+    );
 
     // Layer 2: LLM as judge - comprehensive analysis
-    console.log('  Layer 2: Running LLM judge analysis...');
+    console.log("  Layer 2: Running LLM judge analysis...");
     const llmJudgeResult = await this.llmJudgeAnalysis(response, functionCalls);
-    console.log(`  Layer 2: Confidence=${llmJudgeResult.confidence.toFixed(2)}, Flagged=${llmJudgeResult.isLikelyHallucination}`);
+    console.log(
+      `  Layer 2: Confidence=${llmJudgeResult.confidence.toFixed(2)}, Flagged=${llmJudgeResult.isLikelyHallucination}`
+    );
 
     // Combine both checks for final decision
     const result = this.combineResults(heuristicResult, llmJudgeResult);
-    console.log(`✅ Final: Confidence=${result.confidence.toFixed(2)}, Hallucination=${result.isLikelyHallucination}, Action=${result.suggestedAction || 'none'}`);
+    console.log(
+      `✅ Final: Confidence=${result.confidence.toFixed(2)}, Hallucination=${result.isLikelyHallucination}, Action=${result.suggestedAction || "none"}`
+    );
 
     return result;
   }
@@ -45,36 +51,42 @@ export class HallucinationDetectionService {
     functionCalls?: any[]
   ): Promise<HallucinationDetectionResult> {
     try {
-      const functionContext = functionCalls && functionCalls.length > 0
-        ? `API calls made: ${functionCalls.map(fc => `${fc.function}(${JSON.stringify(fc.args)})`).join(', ')}`
-        : 'No API calls were made.';
+      const functionContext =
+        functionCalls && functionCalls.length > 0
+          ? `API calls made: ${functionCalls.map((fc) => `${fc.function}(${JSON.stringify(fc.args)})`).join(", ")}`
+          : "No API calls were made.";
 
       // Use the prompt from prompts.ts and replace placeholders
-      const prompt = LLM_JUDGE_PROMPT
-        .replace('{response}', response)
-        .replace('{functionContext}', functionContext);
+      const prompt = LLM_JUDGE_PROMPT.replace("{response}", response).replace(
+        "{functionContext}",
+        functionContext
+      );
 
       const resp = await this.openai.responses.create({
-        model: 'gpt-5-mini',
-        input: prompt
+        model: "gpt-5-mini",
+        input: prompt,
       });
-      const llmResponse = { choices: [{ message: { content: resp.output_text } }] };
+      const llmResponse = {
+        choices: [{ message: { content: resp.output_text } }],
+      };
 
-      const analysis = JSON.parse(llmResponse.choices[0].message.content || '{}');
+      const analysis = JSON.parse(
+        llmResponse.choices[0].message.content || "{}"
+      );
 
       return {
         isLikelyHallucination: analysis.isLikelyHallucination || false,
         confidence: analysis.confidence || 0,
         reasons: analysis.concerns || [],
-        suggestedAction: analysis.suggestedAction || undefined
+        suggestedAction: analysis.suggestedAction || undefined,
       };
     } catch (error) {
-      console.error('LLM judge analysis error:', error);
+      console.error("LLM judge analysis error:", error);
       return {
         isLikelyHallucination: false,
         confidence: 0,
         reasons: [],
-        suggestedAction: undefined
+        suggestedAction: undefined,
       };
     }
   }
@@ -89,7 +101,7 @@ export class HallucinationDetectionService {
     // Weighted average: 40% heuristic (fast pattern matching), 60% LLM judge (deep analysis)
     const weights = {
       heuristic: 0.4,
-      llmJudge: 0.6
+      llmJudge: 0.6,
     };
 
     const totalConfidence =
@@ -98,8 +110,8 @@ export class HallucinationDetectionService {
 
     // Aggregate reasons from both layers
     const allReasons = [
-      ...heuristic.reasons.map(r => `[Heuristic] ${r}`),
-      ...llmJudge.reasons.map(r => `[LLM Judge] ${r}`)
+      ...heuristic.reasons.map((r) => `[Heuristic] ${r}`),
+      ...llmJudge.reasons.map((r) => `[LLM Judge] ${r}`),
     ];
 
     // Determine if it's likely a hallucination (if either layer flagged it)
@@ -107,22 +119,25 @@ export class HallucinationDetectionService {
       heuristic.isLikelyHallucination || llmJudge.isLikelyHallucination;
 
     // Choose the most severe suggested action
-    const actions = [heuristic.suggestedAction, llmJudge.suggestedAction].filter(Boolean);
+    const actions = [
+      heuristic.suggestedAction,
+      llmJudge.suggestedAction,
+    ].filter(Boolean);
 
-    let suggestedAction: 'warn' | 'block' | 'verify' | undefined;
-    if (actions.includes('block')) {
-      suggestedAction = 'block';
-    } else if (actions.includes('warn')) {
-      suggestedAction = 'warn';
-    } else if (actions.includes('verify')) {
-      suggestedAction = 'verify';
+    let suggestedAction: "warn" | "block" | "verify" | undefined;
+    if (actions.includes("block")) {
+      suggestedAction = "block";
+    } else if (actions.includes("warn")) {
+      suggestedAction = "warn";
+    } else if (actions.includes("verify")) {
+      suggestedAction = "verify";
     }
 
     return {
       isLikelyHallucination,
       confidence: totalConfidence,
       reasons: allReasons,
-      suggestedAction
+      suggestedAction,
     };
   }
 
@@ -134,104 +149,102 @@ export class HallucinationDetectionService {
     let suspicionScore = 0;
 
     // Check 1: Specific numbers without function calls
-    const hasSpecificNumbers = /\d+(\.\d+)?\s*(°C|°F|USD|EUR|GBP|CHF|cm|inches|km\/h|mph)/gi.test(response);
+    const hasSpecificNumbers =
+      /\d+(\.\d+)?\s*(°C|°F|USD|EUR|GBP|CHF|cm|inches|km\/h|mph)/gi.test(
+        response
+      );
     const hasFunctionData = functionCalls && functionCalls.length > 0;
 
     if (hasSpecificNumbers && !hasFunctionData) {
-      reasons.push('Response contains specific numeric data but no API calls were made');
+      reasons.push(
+        "Response contains specific numeric data but no API calls were made"
+      );
       suspicionScore += 0.4;
     }
 
     // Check 2: Weather-specific terms without weather API call
-    const weatherTerms = /temperature|snow|forecast|conditions|weather|precipitation/gi;
+    const weatherTerms =
+      /temperature|snow|forecast|conditions|weather|precipitation/gi;
     const hasWeatherTerms = weatherTerms.test(response);
-    const hasWeatherCall = functionCalls?.some(fc => fc.function === 'get_weather');
+    const hasWeatherCall = functionCalls?.some(
+      (fc) => fc.function === "get_weather"
+    );
 
     if (hasWeatherTerms && hasSpecificNumbers && !hasWeatherCall) {
-      reasons.push('Response discusses weather conditions without calling weather API');
+      reasons.push(
+        "Response discusses weather conditions without calling weather API"
+      );
       suspicionScore += 0.3;
     }
 
     // Check 3: Currency amounts without currency API call
     const currencyPattern = /\$\d+|\d+\s*(USD|EUR|GBP|CHF)/gi;
     const hasCurrencyAmounts = currencyPattern.test(response);
-    const hasCurrencyCall = functionCalls?.some(fc => fc.function === 'convert_currency');
+    const hasCurrencyCall = functionCalls?.some(
+      (fc) => fc.function === "convert_currency"
+    );
 
     if (hasCurrencyAmounts && !hasCurrencyCall) {
-      reasons.push('Response contains currency amounts without calling currency API');
+      reasons.push(
+        "Response contains currency amounts without calling currency API"
+      );
       suspicionScore += 0.3;
     }
 
-    // Check 4: Uncertain language
+    // Check 4: Uncertain language (only flag if no API data AND many hedges)
     const uncertainPhrases = [
-      'probably', 'likely', 'might be', 'could be', 'around',
-      'approximately', 'roughly', 'about', 'I think', 'I believe'
+      "probably",
+      "might be",
+      "could be",
+      "I think",
+      "I believe",
+      "I guess",
     ];
 
-    const uncertaintyCount = uncertainPhrases.filter(phrase =>
+    const uncertaintyCount = uncertainPhrases.filter((phrase) =>
       response.toLowerCase().includes(phrase)
     ).length;
 
-    if (uncertaintyCount > 2) {
-      reasons.push('Response contains multiple uncertain phrases');
-      suspicionScore += 0.2;
+    // Only flag if there's no function data AND multiple uncertain phrases
+    if (uncertaintyCount > 2 && !hasFunctionData) {
+      reasons.push("Response contains multiple uncertain phrases without using API data");
+      suspicionScore += 0.3;
     }
 
     // Check 5: Very specific data that seems made up
     const verySpecificPattern = /\d+\.\d{2,}\s*(°C|°F|USD|EUR)/gi;
     if (verySpecificPattern.test(response) && !hasFunctionData) {
-      reasons.push('Response contains overly precise numbers without data source');
+      reasons.push(
+        "Response contains overly precise numbers without data source"
+      );
       suspicionScore += 0.3;
     }
 
     const isLikelyHallucination = suspicionScore >= 0.5;
-    let suggestedAction: 'warn' | 'block' | 'verify' | undefined;
+    let suggestedAction: "warn" | "block" | "verify" | undefined;
 
     if (suspicionScore >= 0.8) {
-      suggestedAction = 'block';
+      suggestedAction = "block";
     } else if (suspicionScore >= 0.5) {
-      suggestedAction = 'warn';
+      suggestedAction = "warn";
     } else if (suspicionScore >= 0.3) {
-      suggestedAction = 'verify';
+      suggestedAction = "verify";
     }
 
     // Confidence represents how certain we are about our assessment
     // High suspicion = high confidence in hallucination detection
     // Low suspicion = high confidence it's trustworthy
     // We always have relatively high confidence since heuristics are rule-based
-    const confidence = suspicionScore >= 0.3
-      ? Math.min(suspicionScore, 1)  // Confident about detected issues
-      : 0.7;  // Still confident when no issues found (heuristics are reliable)
+    const confidence =
+      suspicionScore >= 0.3
+        ? Math.min(suspicionScore, 1) // Confident about detected issues
+        : 0.7; // Still confident when no issues found (heuristics are reliable)
 
     return {
       isLikelyHallucination,
       confidence,
       reasons,
-      suggestedAction
+      suggestedAction,
     };
-  }
-
-  async verifyFactualClaim(claim: string, context: string): Promise<boolean> {
-    // This could be enhanced with fact-checking APIs in production
-    const prompt = `Given the following context from verified data sources:
-${context}
-
-Is this claim factually accurate: "${claim}"
-
-Respond with only "true" or "false".`;
-
-    try {
-      const resp = await this.openai.responses.create({
-        model: 'gpt-5-mini',
-        input: prompt
-      });
-      const response = { choices: [{ message: { content: resp.output_text } }] };
-
-      const answer = response.choices[0].message.content?.toLowerCase().trim();
-      return answer === 'true';
-    } catch (error) {
-      console.error('Fact verification error:', error);
-      return false;
-    }
   }
 }
