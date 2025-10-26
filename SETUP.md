@@ -51,8 +51,8 @@ OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxx
 # Without this, weather features will be limited
 OPENWEATHER_API_KEY=xxxxxxxxxxxxxxxxxxxxx
 
-# OPTIONAL: Server port (defaults to 3001)
-PORT=3001
+# OPTIONAL: Server port (defaults to 3005)
+PORT=3005
 ```
 
 **Important Notes:**
@@ -81,12 +81,12 @@ npm run dev
 ```
 
 This single command starts both:
-- **Backend API** on http://localhost:3001
+- **Backend API** on http://localhost:3005
 - **Frontend** on http://localhost:3000
 
 **You should see:**
 ```
-🎿 Ski Vacation Planner API running on http://localhost:3001
+🎿 Ski Vacation Planner API running on http://localhost:3005
 
 📋 Available endpoints:
    GET  /health - Health check
@@ -130,18 +130,18 @@ npm run install:all
 ### Issue: Port already in use
 
 **Solution:**
-If port 3000 or 3001 is already in use:
+If port 3000 or 3005 is already in use:
 
 **Option 1:** Kill the process using the port
 ```bash
 # On macOS/Linux
-lsof -ti:3001 | xargs kill
+lsof -ti:3005 | xargs kill
 lsof -ti:3000 | xargs kill
 ```
 
 **Option 2:** Change the ports
 - Backend: Edit `backend/.env` and set `PORT=3002`
-- Frontend: Edit `frontend/vite.config.ts` and change port to 3001
+- Frontend: Edit `frontend/vite.config.ts` and change port to 3005
 
 ### Issue: Weather API not working
 
@@ -174,7 +174,7 @@ Check the error messages and ensure all dependencies are installed.
 
 **Solution:**
 1. Open browser console (F12) and check for errors
-2. Verify backend is running on port 3001
+2. Verify backend is running on port 3005
 3. Check CORS configuration if accessing from different origin
 4. Clear browser cache and reload
 
@@ -217,7 +217,7 @@ This will:
 
 ### Health Check
 ```bash
-curl http://localhost:3001/health
+curl http://localhost:3005/health
 ```
 
 Expected response:
@@ -230,7 +230,7 @@ Expected response:
 
 ### Send a Test Message
 ```bash
-curl -X POST http://localhost:3001/api/chat \
+curl -X POST http://localhost:3005/api/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "What are the best ski resorts in the Alps?"}'
 ```

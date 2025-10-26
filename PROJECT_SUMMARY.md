@@ -145,7 +145,7 @@ User: "How much in local currency?"
 └─────────────────┬────────────────────────────────┘
                   │ REST API (axios)
 ┌─────────────────▼────────────────────────────────┐
-│        Express Backend (Port 3001)               │
+│        Express Backend (Port 3005)               │
 │                                                   │
 │  ┌────────────────────────────────────────────┐  │
 │  │  ChatController                            │  │
@@ -252,7 +252,7 @@ npm run dev
 
 **Access:**
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
+- Backend API: http://localhost:3005
 
 ## Assignment Requirements Fulfillment
 

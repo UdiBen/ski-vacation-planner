@@ -35,7 +35,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 └─────────────┬───────────────────────┘
               │ HTTP/REST
 ┌─────────────▼───────────────────────┐
-│   Express Backend (Port 3001)       │
+│   Express Backend (Port 3005)       │
 │                                     │
 │  ┌──────────────────────────────┐  │
 │  │  Conversation Manager         │  │
@@ -106,7 +106,7 @@ npm run dev
 ```
 
 This will start:
-- Backend API on http://localhost:3001
+- Backend API on http://localhost:3005
 - Frontend on http://localhost:3000
 
 ### Getting API Keys
@@ -393,7 +393,7 @@ npm start
 ```
 OPENAI_API_KEY=sk-...          # Required
 OPENWEATHER_API_KEY=...        # Optional
-PORT=3001                      # Optional, defaults to 3001
+PORT=3005                      # Optional, defaults to 3005
 ```
 
 ### Customization

@@ -50,8 +50,8 @@ OPENAI_API_KEY=sk-proj-your-actual-key-here
 # OPTIONAL (but recommended for full functionality)
 OPENWEATHER_API_KEY=your-weather-key-here
 
-# OPTIONAL (defaults to 3001)
-PORT=3001
+# OPTIONAL (defaults to 3005)
+PORT=3005
 ```
 
 **Important:**
@@ -84,7 +84,7 @@ npm run dev
 You should see colored output like:
 
 ```
-[BACKEND] 🎿 Ski Vacation Planner API running on http://localhost:3001
+[BACKEND] 🎿 Ski Vacation Planner API running on http://localhost:3005
 [FRONTEND] ➜  Local:   http://localhost:3000/
 ```
 
@@ -129,7 +129,7 @@ What about the weather there?
 # Start both backend and frontend (with colored output)
 npm run dev
 
-# Start backend only (port 3001)
+# Start backend only (port 3005)
 npm run dev:backend
 
 # Start frontend only (port 3000)
@@ -157,7 +157,7 @@ Your Browser (localhost:3000)
          ↓
    React Frontend
          ↓ (HTTP REST)
-   Express Backend (localhost:3001)
+   Express Backend (localhost:3005)
          ↓
    ┌─────┴─────┐
    ↓           ↓
@@ -219,11 +219,11 @@ For complex queries, the assistant shows its reasoning process.
 
 ### Port already in use
 
-**Error:** "Port 3001 is already in use"
+**Error:** "Port 3005 is already in use"
 
 ```bash
 # On macOS/Linux
-lsof -ti:3001 | xargs kill
+lsof -ti:3005 | xargs kill
 lsof -ti:3000 | xargs kill
 ```
 
@@ -258,10 +258,10 @@ Both backend and frontend auto-reload on file changes:
 
 ```bash
 # Health check
-curl http://localhost:3001/health
+curl http://localhost:3005/health
 
 # Send a message
-curl -X POST http://localhost:3001/api/chat \
+curl -X POST http://localhost:3005/api/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "What are the best ski resorts in the Alps?"}'
 ```

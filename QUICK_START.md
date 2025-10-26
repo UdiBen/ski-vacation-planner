@@ -45,7 +45,7 @@ npm run install:all
 # Start both backend and frontend (with colored labels!)
 npm run dev
 
-# Start backend only (port 3001)
+# Start backend only (port 3005)
 npm run dev:backend
 
 # Start frontend only (port 3000)
@@ -67,7 +67,7 @@ npm run test:api
 → Make sure `backend/.env` exists with valid API key
 
 **"Port already in use"**
-→ Kill process: `lsof -ti:3001 | xargs kill`
+→ Kill process: `lsof -ti:3005 | xargs kill`
 
 **"Module not found"**
 → Reinstall: `rm -rf node_modules */node_modules && npm run install:all`
