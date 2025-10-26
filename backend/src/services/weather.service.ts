@@ -18,36 +18,55 @@ export class WeatherService {
 
   /**
    * Get coordinates for a location using Open-Meteo Geocoding API
+   * Tries multiple location name variations if first attempt fails
    */
   private async getCoordinates(
     location: string
   ): Promise<{ lat: number; lon: number; name: string }> {
-    try {
-      const response = await axios.get(this.geocodingUrl, {
-        params: {
-          name: location,
-          count: 1,
-          language: "en",
-          format: "json",
-        },
-      });
+    // Generate location variations to try
+    const locationVariations = [
+      location, // Original
+      location.replace(/'/g, "'"), // Straight apostrophe to curly
+      location.replace(/'/g, "'"), // Curly to straight
+      location.replace(/['']/g, ""), // Remove apostrophes
+      location.replace(/['']/g, "-"), // Replace with hyphen
+      location + ", France", // Add country for ski resorts
+    ];
 
-      if (!response.data.results || response.data.results.length === 0) {
-        throw new Error(`Location "${location}" not found`);
-      }
+    // Remove duplicates
+    const uniqueLocations = [...new Set(locationVariations)];
 
-      const result = response.data.results[0];
-      return {
-        lat: result.latitude,
-        lon: result.longitude,
-        name: result.name,
-      };
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(`Geocoding error: ${error.message}`);
+    // Try each variation
+    for (const loc of uniqueLocations) {
+      try {
+        const response = await axios.get(this.geocodingUrl, {
+          params: {
+            name: loc,
+            count: 1,
+            language: "en",
+            format: "json",
+          },
+        });
+
+        if (response.data.results && response.data.results.length > 0) {
+          const result = response.data.results[0];
+          console.log(`✅ Found location: "${loc}" → ${result.name}`);
+          return {
+            lat: result.latitude,
+            lon: result.longitude,
+            name: result.name,
+          };
+        }
+      } catch (error) {
+        // Continue to next variation
+        continue;
       }
-      throw error;
     }
+
+    // If all variations failed
+    throw new Error(
+      `Location "${location}" not found. Tried variations: ${uniqueLocations.join(", ")}`
+    );
   }
 
   /**
