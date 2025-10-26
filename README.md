@@ -12,11 +12,11 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 ### Core Functionality
 
 - **Intelligent Conversational AI**: Multi-turn conversations with OpenAI-managed state
-- **Function Calling**: Automatic API routing based on user queries
+- **Function Calling**: Automatic API routing based on user queries (GPT-5)
 - **Real-time Weather Data**: Live ski conditions from Open-Meteo API
 - **Currency Conversion**: Up-to-date exchange rates for travel planning
 - **Hallucination Detection**: 2-layer approach (heuristics + LLM judge)
-- **Reasoning Extraction**: Model's thought process logged to console in real-time
+- **Action-Oriented Responses**: Direct answers with immediate API calls, no verbose reasoning
 
 ### Technical Highlights
 
@@ -43,7 +43,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 │  │  LLM Service (Responses API)  │  │
 │  │  - GPT-5 Integration          │  │
 │  │  - Function Calling           │  │
-│  │  - Reasoning Extraction       │  │
+│  │  - Action-Oriented Prompts    │  │
 │  │  (State managed by OpenAI)    │  │
 │  └──────────────────────────────┘  │
 │                                     │
@@ -181,20 +181,25 @@ const tools = [
 - Chain-of-thought guidance
 - Citation requirements
 
-### 3. Multi-Step Reasoning (Chain-of-Thought)
+### 3. Intelligent Decision Making
 
-For complex queries, the assistant uses structured reasoning:
+The assistant uses GPT-5's advanced reasoning capabilities to handle complex queries:
 
 ```
 User: "Should I visit the Alps in March on a $2000 budget?"
 
-Assistant's internal process:
-1. Identify requirements: Budget, timing, location
-2. Check weather conditions in Alps for March
-3. Consider typical costs
-4. Evaluate skill level (from context)
-5. Synthesize recommendation
+Assistant approach:
+1. Analyzes requirements: Budget, timing, location
+2. Calls get_weather API for Alps March conditions
+3. Considers typical resort costs
+4. Synthesizes recommendation based on real data
+5. Asks follow-up questions to refine suggestion
 ```
+
+**Key features:**
+- Automatic function calling (decides when to use weather/currency APIs)
+- Context-aware responses (remembers previous conversation)
+- Direct, action-oriented (calls APIs immediately, no verbose explanations)
 
 ### 4. Hallucination Detection & Management
 
@@ -223,7 +228,7 @@ Assistant's internal process:
 - Both layers run for every response
 - Results weighted and combined (40% heuristic, 60% LLM judge)
 - Takes most severe action recommended by either layer
-- Real-time reasoning process logged to backend console
+- Detailed logging in backend console for debugging
 
 **User Experience:**
 
