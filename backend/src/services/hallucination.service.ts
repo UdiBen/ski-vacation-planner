@@ -84,12 +84,12 @@ Respond in JSON format:
   "verdict": "trustworthy" | "questionable" | "likely_fabricated"
 }`;
 
-      const llmResponse = await this.openai.chat.completions.create({
+      const resp = await this.openai.responses.create({
         model: 'gpt-5-mini',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.2,
-        response_format: { type: 'json_object' }
+        input: prompt,
+        temperature: 0.2
       });
+      const llmResponse = { choices: [{ message: { content: resp.output_text } }] };
 
       const analysis = JSON.parse(llmResponse.choices[0].message.content || '{}');
 
@@ -134,12 +134,12 @@ Respond in JSON format:
     try {
       const prompt = HALLUCINATION_DETECTION_PROMPT.replace('{response}', response);
 
-      const llmResponse = await this.openai.chat.completions.create({
+      const resp = await this.openai.responses.create({
         model: 'gpt-5-mini',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        response_format: { type: 'json_object' }
+        input: prompt,
+        temperature: 0.3
       });
+      const llmResponse = { choices: [{ message: { content: resp.output_text } }] };
 
       const analysis = JSON.parse(llmResponse.choices[0].message.content || '{}');
 
@@ -313,12 +313,12 @@ Is this claim factually accurate: "${claim}"
 Respond with only "true" or "false".`;
 
     try {
-      const response = await this.openai.chat.completions.create({
+      const resp = await this.openai.responses.create({
         model: 'gpt-5-mini',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0,
-        max_tokens: 10
+        input: prompt,
+        temperature: 0
       });
+      const response = { choices: [{ message: { content: resp.output_text } }] };
 
       const answer = response.choices[0].message.content?.toLowerCase().trim();
       return answer === 'true';
