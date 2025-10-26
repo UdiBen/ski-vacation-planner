@@ -9,7 +9,7 @@ This guide will help you get the Ski Vacation Planner up and running in just a f
 ### Required
 - **Node.js 18+** - [Download here](https://nodejs.org/)
 - **OpenAI API Key** - [Get one here](https://platform.openai.com/api-keys)
-  - Cost: ~$0.01-$0.05 per conversation with GPT-4
+  - Cost: ~$0.005-$0.02 per conversation with GPT-4o (cheaper than GPT-4!)
 
 ### Weather API (No Setup Needed!)
 - **Open-Meteo** - Free, open-source weather API
@@ -162,18 +162,18 @@ Your Browser (localhost:3000)
    ┌─────┴─────┐
    ↓           ↓
 OpenAI      External APIs
-GPT-4       (Weather, Currency)
+GPT-4o       (Weather, Currency)
 ```
 
 ### The Magic: Function Calling
 
-The assistant uses **GPT-4's function calling** to automatically decide when to use external APIs:
+The assistant uses **GPT-4o's function calling** to automatically decide when to use external APIs:
 
 1. You ask: "What's the weather in Aspen?"
-2. GPT-4 thinks: "I need real-time weather data"
-3. GPT-4 calls: `get_weather("Aspen")`
+2. GPT-4o thinks: "I need real-time weather data"
+3. GPT-4o calls: `get_weather("Aspen")`
 4. Backend executes the Open-Meteo API call
-5. GPT-4 receives data and formats a natural response
+5. GPT-4o receives data and formats a natural response
 6. You see: "The weather in Aspen is currently -2°C with light snow..."
 
 **No manual intent classification needed!** The LLM decides intelligently.

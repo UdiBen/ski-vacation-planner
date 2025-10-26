@@ -85,7 +85,7 @@ Respond in JSON format:
 }`;
 
       const llmResponse = await this.openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.2,
         response_format: { type: 'json_object' }
@@ -135,7 +135,7 @@ Respond in JSON format:
       const prompt = HALLUCINATION_DETECTION_PROMPT.replace('{response}', response);
 
       const llmResponse = await this.openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.3,
         response_format: { type: 'json_object' }
@@ -314,7 +314,7 @@ Respond with only "true" or "false".`;
 
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0,
         max_tokens: 10

@@ -83,8 +83,8 @@ export class LLMService {
       }))
     ];
 
-    let response = await this.openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+    const response = await this.openai.chat.completions.create({
+      model: 'gpt-4o',
       messages: openAIMessages,
       tools: this.tools,
       tool_choice: 'auto',
@@ -153,7 +153,7 @@ export class LLMService {
 
       // Get final response with function results
       const finalResponse = await this.openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4o',
         messages: openAIMessages,
         temperature: 0.7
       });
@@ -185,7 +185,7 @@ Think through this step by step:
 Provide your reasoning and then your final answer.`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7
     });

@@ -236,15 +236,17 @@ Backend logs show the detection process:
 
 **Layer 2** (Common Sense):
 - Time: ~1-2 seconds
-- Cost: ~$0.0001 per check (GPT-3.5)
+- Cost: ~$0.00005 per check (GPT-4o-mini)
 - Always runs
 
 **Layer 3** (Detailed):
 - Time: ~1-2 seconds
-- Cost: ~$0.0001 per check (GPT-3.5)
+- Cost: ~$0.00005 per check (GPT-4o-mini)
 - Only runs when triggered (~30% of time)
 
-**Total per message**: ~$0.0002 and 2-4 seconds
+**Total per message**: ~$0.0001 and 2-4 seconds
+
+**Note**: Using GPT-4o-mini for validation is ~80% cheaper than GPT-3.5!
 
 This is a reasonable tradeoff for accuracy in an academic project.
 

@@ -1,11 +1,11 @@
 # 🎿 Ski Vacation Planner - Intelligent AI Assistant
 
-An advanced conversational AI assistant that helps users plan their perfect ski vacation using GPT-4, real-time weather data, and currency conversion APIs. Built for an academic assignment demonstrating prompt engineering, API integration, and hallucination management.
+An advanced conversational AI assistant that helps users plan their perfect ski vacation using GPT-4o, real-time weather data, and currency conversion APIs. Built for an academic assignment demonstrating prompt engineering, API integration, and hallucination management.
 
 ![Tech Stack](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)
-![GPT-4](https://img.shields.io/badge/GPT--4-412991?style=flat&logo=openai&logoColor=white)
+![GPT-4o](https://img.shields.io/badge/GPT--4-412991?style=flat&logo=openai&logoColor=white)
 
 ## 🌟 Features
 
@@ -45,7 +45,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 │                                     │
 │  ┌──────────────────────────────┐  │
 │  │  LLM Service (Function Call)  │  │
-│  │  - GPT-4 Integration          │  │
+│  │  - GPT-4o Integration          │  │
 │  │  - Tool Routing               │  │
 │  └──────────────────────────────┘  │
 │                                     │
@@ -253,7 +253,7 @@ ski-vacation-planner/
 │   │   ├── controllers/
 │   │   │   └── chat.controller.ts      # API endpoints
 │   │   ├── services/
-│   │   │   ├── llm.service.ts          # GPT-4 integration
+│   │   │   ├── llm.service.ts          # GPT-4o integration
 │   │   │   ├── weather.service.ts      # Weather API wrapper
 │   │   │   ├── currency.service.ts     # Currency API wrapper
 │   │   │   ├── conversation.service.ts # Context management
@@ -347,7 +347,7 @@ Assistant: [knows context is France, converts EUR to EUR]
 
 ### ✅ Technical Implementation
 - TypeScript for type safety
-- GPT-4 Turbo via OpenAI API
+- GPT-4oo via OpenAI API
 - React chat interface (better than CLI)
 - Express backend
 
@@ -399,7 +399,7 @@ PORT=3005                      # Optional, defaults to 3005
 ### Customization
 
 **Adjust LLM behavior** in `backend/src/services/llm.service.ts`:
-- Model selection (gpt-4-turbo-preview, gpt-3.5-turbo, etc.)
+- Model selection (gpt-4o, gpt-4o-mini, etc.)
 - Temperature (0.7 default)
 - Token limits
 
@@ -443,7 +443,7 @@ MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
-- OpenAI for GPT-4 API
+- OpenAI for GPT-4o API
 - Open-Meteo for weather data API
 - Exchange Rate API for currency data
 - Course instructors for the assignment specification
