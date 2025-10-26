@@ -250,18 +250,19 @@ The system uses OpenAI's Responses API for server-side conversation state manage
 - Seamless context continuity
 
 **How it works:**
+
 ```typescript
 // First message
 const response1 = await openai.responses.create({
   input: "I'm a beginner looking for ski resorts",
-  store: true
+  store: true,
 });
 // OpenAI stores: response1.id
 
 // Follow-up message
 const response2 = await openai.responses.create({
   input: "What about the weather there?",
-  previous_response_id: response1.id  // OpenAI knows full context
+  previous_response_id: response1.id, // OpenAI knows full context
 });
 // OpenAI automatically maintains conversation state
 ```
@@ -382,41 +383,6 @@ User: "How much would 1000 euros be in the local currency?"
 Assistant: [knows context is France, converts EUR to EUR]
 ```
 
-## 🎓 Assignment Requirements Coverage
-
-### ✅ Conversation-Oriented Design
-
-- Handles 3+ types of queries (weather, currency, planning)
-- Multi-turn conversation with context tracking
-- Natural, helpful interaction flow
-
-### ✅ Advanced Prompt Engineering
-
-- Thoughtful system prompts in `utils/prompts.ts`
-- Chain-of-thought implementation for complex queries
-- Control strategies to reduce hallucinations
-
-### ✅ Technical Implementation
-
-- TypeScript for type safety
-- GPT-5o via OpenAI API
-- React chat interface (better than CLI)
-- Express backend
-
-### ✅ External Data Integration
-
-- Open-Meteo API for weather data
-- Exchange Rate API for currency
-- Clear decision logic via function calling
-- Data fusion in responses
-
-### ✅ Hallucination Detection & Management
-
-- Heuristic analysis
-- LLM-based verification
-- User warnings and data source indicators
-- Confidence scoring
-
 ## 🛠️ Development Scripts
 
 ```bash
@@ -439,6 +405,73 @@ npm run build
 npm start
 ```
 
+## 🚀 Deployment
+
+### Deploy to Render (Recommended - Free & Easy)
+
+This project includes a `render.yaml` configuration for one-click deployment to Render.com.
+
+#### Prerequisites:
+- GitHub account
+- Render account (free at https://render.com)
+- OpenAI API key
+
+#### Steps:
+
+1. **Push your code to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Connect to Render**
+   - Go to https://dashboard.render.com
+   - Click "New" → "Blueprint"
+   - Connect your GitHub repository
+   - Render will automatically detect the `render.yaml` file
+
+3. **Configure Environment Variables**
+   - Render will prompt you for the `OPENAI_API_KEY`
+   - Enter your OpenAI API key
+   - Click "Apply"
+
+4. **Deploy!**
+   - Render will automatically:
+     - Deploy the backend API
+     - Deploy the frontend static site
+     - Connect them together
+   - First deployment takes ~5 minutes
+
+5. **Access Your App**
+   - Frontend URL: `https://ski-planner-frontend.onrender.com`
+   - Backend API: `https://ski-planner-backend.onrender.com`
+
+#### Notes:
+- Free tier includes:
+  - Automatic HTTPS
+  - Automatic deploys on git push
+  - 750 hours/month (enough for 24/7 uptime)
+- Backend will spin down after 15 minutes of inactivity (first request may be slow)
+
+### Alternative: Deploy to Vercel (Frontend) + Render (Backend)
+
+If you prefer to deploy frontend and backend separately:
+
+#### Frontend (Vercel):
+```bash
+cd frontend
+npx vercel
+```
+
+#### Backend (Render):
+1. Create new Web Service on Render
+2. Connect GitHub repository
+3. Configure:
+   - Build Command: `cd backend && npm install && npm run build`
+   - Start Command: `cd backend && npm start`
+   - Add `OPENAI_API_KEY` environment variable
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -455,8 +488,6 @@ PORT=3005                      # Optional, defaults to 3005
 **Adjust LLM behavior** in `backend/src/services/llm.service.ts`:
 
 - Model selection (gpt-5, gpt-5-mini, etc.)
-- Temperature (0.7 default)
-- Token limits
 
 **Modify prompts** in `backend/src/utils/prompts.ts`:
 
@@ -467,47 +498,6 @@ PORT=3005                      # Optional, defaults to 3005
 
 - Heuristic thresholds
 - Detection patterns
-
-## 📊 Evaluation Criteria Demonstration
-
-### 1. Conversation Quality
-
-- Natural language understanding
-- Context awareness across turns
-- Helpful, accurate responses
-- Engaging personality
-
-### 2. Hallucination Handling
-
-- Multi-layer detection system
-- User warnings when confidence is low
-- Data source transparency
-- Graceful degradation
-
-### 3. Context Management
-
-- Tracks user preferences
-- Remembers previous topics
-- Handles follow-up questions
-- Maintains conversation state
-
-### 4. External Data Integration
-
-- Seamless API integration
-- Real-time data fusion
-- Accurate attribution
-- Error handling
-
-## 📝 License
-
-MIT License - see LICENSE file for details
-
-## 🙏 Acknowledgments
-
-- OpenAI for GPT-5 API
-- Open-Meteo for weather data API
-- Exchange Rate API for currency data
-- Course instructors for the assignment specification
 
 ## 📸 Sample Conversation Transcripts
 
@@ -520,7 +510,3 @@ See `docs/sample-conversations.md` for example interactions demonstrating:
 - Context-aware follow-ups
 
 ---
-
-**Built with ❤️ for AI & LLM Systems Course**
-
-For questions or issues, please open a GitHub issue.
