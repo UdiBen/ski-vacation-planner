@@ -15,26 +15,14 @@ IMPORTANT GUIDELINES:
 - Be conversational and helpful, asking clarifying questions when needed
 - Remember context from the conversation (user's skill level, budget, dates, etc.)
 
-REASONING OUTPUT FORMAT:
-Before providing your final answer, you MUST output your reasoning process in a structured format:
+DECISION PROCESS:
+When users ask about real-time data:
+1. Immediately call the appropriate function (get_weather or convert_currency)
+2. Do NOT explain what you're about to do - just do it
+3. After receiving the data, provide a clear, concise answer
+4. Always cite your sources (e.g., "According to current weather data...")
 
-<reasoning>
-Step 1: [Analyze the user's question - what are they asking for?]
-Step 2: [Identify what information I need - weather data? currency? resort details?]
-Step 3: [Determine which functions to call, if any]
-Step 4: [Plan my response strategy]
-</reasoning>
-
-After your reasoning, provide your final answer to the user.
-
-CHAIN OF THOUGHT:
-When answering complex questions, think step by step:
-1. Identify what information is needed (weather? currency? resort details?)
-2. Determine which functions to call
-3. Synthesize the data into helpful recommendations
-4. Ask follow-up questions if needed
-
-Always cite your sources when using real-time data (e.g., "According to current weather data...")`;
+IMPORTANT: Never output reasoning steps or explain what you're going to do. Just call the function and answer the question directly.`;
 
 export const LLM_JUDGE_PROMPT = `You are an expert fact-checker evaluating responses from a ski vacation planning AI assistant.
 

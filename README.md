@@ -5,7 +5,7 @@ An advanced conversational AI assistant that helps users plan their perfect ski 
 ![Tech Stack](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black)
-![GPT-5](https://img.shields.io/badge/GPT--4-412991?style=flat&logo=openai&logoColor=white)
+![GPT-5](https://img.shields.io/badge/GPT--5-412991?style=flat&logo=openai&logoColor=white)
 
 ## 🌟 Features
 
@@ -176,18 +176,10 @@ const tools = [
 
 **System Prompt Strategy:**
 
-- Clear role definition
 - Explicit instructions for when to use functions
 - Anti-hallucination directives
 - Chain-of-thought guidance
 - Citation requirements
-
-Key techniques:
-
-- **Instruction Hierarchies**: Critical rules emphasized with IMPORTANT tags
-- **Few-shot Examples**: Implicit learning through prompt structure
-- **Constraint Setting**: Temperature tuning and explicit boundaries
-- **Output Formatting**: Structured responses with markdown
 
 ### 3. Multi-Step Reasoning (Chain-of-Thought)
 
@@ -446,6 +438,7 @@ Backend will be live at `https://your-app.onrender.com`
 ### Detailed Instructions
 
 See **[DEPLOYMENT.md](DEPLOYMENT.md)** for:
+
 - Step-by-step guide with screenshots
 - Troubleshooting tips
 - Alternative free hosting options
@@ -453,13 +446,13 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for:
 
 ### Cost Summary
 
-| Service | Free Tier | Cost |
-|---------|-----------|------|
-| Vercel (Frontend) | 100 GB bandwidth/month | $0 |
-| Render (Backend) | 750 hours/month | $0 |
-| **Total** | | **$0/month** |
+| Service           | Free Tier              | Cost         |
+| ----------------- | ---------------------- | ------------ |
+| Vercel (Frontend) | 100 GB bandwidth/month | $0           |
+| Render (Backend)  | 750 hours/month        | $0           |
+| **Total**         |                        | **$0/month** |
 
-*Note: Render free tier spins down after 15min idle (30-60s cold start). You only pay for OpenAI API usage (~$0.10-0.50/day)*
+_Note: Render free tier spins down after 15min idle (30-60s cold start). You only pay for OpenAI API usage (~$0.10-0.50/day)_
 
 ## 🔧 Configuration
 
