@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { HallucinationDetectionResult } from '../types';
-import { HALLUCINATION_DETECTION_PROMPT } from '../utils/prompts';
+import { LLM_JUDGE_PROMPT } from '../utils/prompts';
 
 export class HallucinationDetectionService {
   private openai: OpenAI;
@@ -17,127 +17,46 @@ export class HallucinationDetectionService {
     response: string,
     functionCalls?: any[]
   ): Promise<HallucinationDetectionResult> {
-    console.log('🔍 Starting 3-layer hallucination detection...');
+    console.log('🔍 Starting 2-layer hallucination detection...');
 
     // Layer 1: Quick heuristic checks first (faster than LLM call)
     console.log('  Layer 1: Running heuristic analysis...');
     const heuristicResult = this.heuristicCheck(response, functionCalls);
     console.log(`  Layer 1: Confidence=${heuristicResult.confidence.toFixed(2)}, Flagged=${heuristicResult.isLikelyHallucination}`);
 
-    // Layer 2: Common sense check - ask LLM if response makes sense
-    console.log('  Layer 2: Running common sense check (LLM)...');
-    const commonSenseResult = await this.commonSenseCheck(response, functionCalls);
-    console.log(`  Layer 2: Confidence=${commonSenseResult.confidence.toFixed(2)}, Flagged=${commonSenseResult.isLikelyHallucination}`);
+    // Layer 2: LLM as judge - comprehensive analysis
+    console.log('  Layer 2: Running LLM judge analysis...');
+    const llmJudgeResult = await this.llmJudgeAnalysis(response, functionCalls);
+    console.log(`  Layer 2: Confidence=${llmJudgeResult.confidence.toFixed(2)}, Flagged=${llmJudgeResult.isLikelyHallucination}`);
 
-    // Layer 3: For borderline cases, use LLM for deeper analysis
-    let detailedAnalysis: HallucinationDetectionResult | null = null;
-
-    if (heuristicResult.confidence > 0.3 || commonSenseResult.isLikelyHallucination) {
-      console.log('  Layer 3: Running detailed LLM analysis (triggered)...');
-      detailedAnalysis = await this.detailedLLMAnalysis(response, functionCalls);
-      console.log(`  Layer 3: Confidence=${detailedAnalysis.confidence.toFixed(2)}, Flagged=${detailedAnalysis.isLikelyHallucination}`);
-    } else {
-      console.log('  Layer 3: Skipped (low suspicion from previous layers)');
-    }
-
-    // Combine all checks for final decision
-    const result = this.combineResults(heuristicResult, commonSenseResult, detailedAnalysis);
+    // Combine both checks for final decision
+    const result = this.combineResults(heuristicResult, llmJudgeResult);
     console.log(`✅ Final: Confidence=${result.confidence.toFixed(2)}, Hallucination=${result.isLikelyHallucination}, Action=${result.suggestedAction || 'none'}`);
 
     return result;
   }
 
   /**
-   * Layer 2: Common Sense Check
-   * Directly asks the LLM if the response makes logical sense
+   * Layer 2: LLM as Judge
+   * Comprehensive analysis combining logical consistency and detailed verification
    */
-  private async commonSenseCheck(
+  private async llmJudgeAnalysis(
     response: string,
     functionCalls?: any[]
   ): Promise<HallucinationDetectionResult> {
     try {
       const functionContext = functionCalls && functionCalls.length > 0
-        ? `\n\nAPI calls made: ${functionCalls.map(fc => `${fc.function}(${JSON.stringify(fc.args)})`).join(', ')}`
-        : '\n\nNo API calls were made.';
+        ? `API calls made: ${functionCalls.map(fc => `${fc.function}(${JSON.stringify(fc.args)})`).join(', ')}`
+        : 'No API calls were made.';
 
-      const prompt = `You are a fact-checker for a ski vacation planning assistant. Analyze this response for logical consistency and accuracy.
-
-Response to check:
-"${response}"
-
-Context: ${functionContext}
-
-Evaluate:
-1. Does the response make logical sense?
-2. Are there any contradictions or impossible claims?
-3. If weather/currency data is mentioned, was the appropriate API called?
-4. Are there vague statements passed off as facts?
-5. Does anything seem fabricated or guessed?
-
-Respond in JSON format:
-{
-  "makesLogicalSense": boolean,
-  "hasContradictions": boolean,
-  "seemsFabricated": boolean,
-  "confidence": number (0-1, how confident you are in your assessment),
-  "concerns": string[] (list specific concerns if any),
-  "verdict": "trustworthy" | "questionable" | "likely_fabricated"
-}`;
+      // Use the prompt from prompts.ts and replace placeholders
+      const prompt = LLM_JUDGE_PROMPT
+        .replace('{response}', response)
+        .replace('{functionContext}', functionContext);
 
       const resp = await this.openai.responses.create({
         model: 'gpt-5-mini',
-        input: prompt,
-        temperature: 0.2
-      });
-      const llmResponse = { choices: [{ message: { content: resp.output_text } }] };
-
-      const analysis = JSON.parse(llmResponse.choices[0].message.content || '{}');
-
-      const isLikelyHallucination =
-        !analysis.makesLogicalSense ||
-        analysis.hasContradictions ||
-        analysis.seemsFabricated ||
-        analysis.verdict === 'likely_fabricated';
-
-      let suggestedAction: 'warn' | 'block' | 'verify' | undefined;
-      if (analysis.verdict === 'likely_fabricated') {
-        suggestedAction = 'block';
-      } else if (analysis.verdict === 'questionable') {
-        suggestedAction = 'warn';
-      }
-
-      return {
-        isLikelyHallucination,
-        confidence: analysis.confidence || 0,
-        reasons: analysis.concerns || [],
-        suggestedAction
-      };
-    } catch (error) {
-      console.error('Common sense check error:', error);
-      return {
-        isLikelyHallucination: false,
-        confidence: 0,
-        reasons: [],
-        suggestedAction: undefined
-      };
-    }
-  }
-
-  /**
-   * Layer 3: Detailed LLM Analysis
-   * Deep analysis using structured prompt
-   */
-  private async detailedLLMAnalysis(
-    response: string,
-    functionCalls?: any[]
-  ): Promise<HallucinationDetectionResult> {
-    try {
-      const prompt = HALLUCINATION_DETECTION_PROMPT.replace('{response}', response);
-
-      const resp = await this.openai.responses.create({
-        model: 'gpt-5-mini',
-        input: prompt,
-        temperature: 0.3
+        input: prompt
       });
       const llmResponse = { choices: [{ message: { content: resp.output_text } }] };
 
@@ -146,11 +65,11 @@ Respond in JSON format:
       return {
         isLikelyHallucination: analysis.isLikelyHallucination || false,
         confidence: analysis.confidence || 0,
-        reasons: analysis.reasons || [],
-        suggestedAction: analysis.suggestedAction || 'none'
+        reasons: analysis.concerns || [],
+        suggestedAction: analysis.suggestedAction || undefined
       };
     } catch (error) {
-      console.error('Detailed LLM analysis error:', error);
+      console.error('LLM judge analysis error:', error);
       return {
         isLikelyHallucination: false,
         confidence: 0,
@@ -161,53 +80,34 @@ Respond in JSON format:
   }
 
   /**
-   * Combine results from all three layers
+   * Combine results from both layers
    */
   private combineResults(
     heuristic: HallucinationDetectionResult,
-    commonSense: HallucinationDetectionResult,
-    detailed: HallucinationDetectionResult | null
+    llmJudge: HallucinationDetectionResult
   ): HallucinationDetectionResult {
-    // Aggregate confidence scores (weighted average)
+    // Weighted average: 40% heuristic (fast pattern matching), 60% LLM judge (deep analysis)
     const weights = {
-      heuristic: 0.3,
-      commonSense: 0.5,
-      detailed: 0.2
+      heuristic: 0.4,
+      llmJudge: 0.6
     };
 
-    let totalConfidence =
+    const totalConfidence =
       heuristic.confidence * weights.heuristic +
-      commonSense.confidence * weights.commonSense;
+      llmJudge.confidence * weights.llmJudge;
 
-    if (detailed) {
-      totalConfidence += detailed.confidence * weights.detailed;
-    } else {
-      // Redistribute detailed weight if not used
-      const redistribution = weights.detailed / 2;
-      totalConfidence =
-        heuristic.confidence * (weights.heuristic + redistribution) +
-        commonSense.confidence * (weights.commonSense + redistribution);
-    }
-
-    // Aggregate reasons
+    // Aggregate reasons from both layers
     const allReasons = [
       ...heuristic.reasons.map(r => `[Heuristic] ${r}`),
-      ...commonSense.reasons.map(r => `[Common Sense] ${r}`),
-      ...(detailed?.reasons || []).map(r => `[Detailed] ${r}`)
+      ...llmJudge.reasons.map(r => `[LLM Judge] ${r}`)
     ];
 
-    // Determine if it's likely a hallucination (if any layer flagged it)
+    // Determine if it's likely a hallucination (if either layer flagged it)
     const isLikelyHallucination =
-      heuristic.isLikelyHallucination ||
-      commonSense.isLikelyHallucination ||
-      (detailed?.isLikelyHallucination || false);
+      heuristic.isLikelyHallucination || llmJudge.isLikelyHallucination;
 
     // Choose the most severe suggested action
-    const actions = [
-      heuristic.suggestedAction,
-      commonSense.suggestedAction,
-      detailed?.suggestedAction
-    ].filter(Boolean);
+    const actions = [heuristic.suggestedAction, llmJudge.suggestedAction].filter(Boolean);
 
     let suggestedAction: 'warn' | 'block' | 'verify' | undefined;
     if (actions.includes('block')) {
@@ -295,9 +195,17 @@ Respond in JSON format:
       suggestedAction = 'verify';
     }
 
+    // Confidence represents how certain we are about our assessment
+    // High suspicion = high confidence in hallucination detection
+    // Low suspicion = high confidence it's trustworthy
+    // We always have relatively high confidence since heuristics are rule-based
+    const confidence = suspicionScore >= 0.3
+      ? Math.min(suspicionScore, 1)  // Confident about detected issues
+      : 0.7;  // Still confident when no issues found (heuristics are reliable)
+
     return {
       isLikelyHallucination,
-      confidence: Math.min(suspicionScore, 1),
+      confidence,
       reasons,
       suggestedAction
     };
@@ -315,8 +223,7 @@ Respond with only "true" or "false".`;
     try {
       const resp = await this.openai.responses.create({
         model: 'gpt-5-mini',
-        input: prompt,
-        temperature: 0
+        input: prompt
       });
       const response = { choices: [{ message: { content: resp.output_text } }] };
 

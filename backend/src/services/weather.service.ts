@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { WeatherData, DailyForecast } from '../types';
+import axios from "axios";
+import { WeatherData, DailyForecast } from "../types";
 
 /**
  * Weather Service using Open-Meteo API
@@ -9,25 +9,27 @@ import { WeatherData, DailyForecast } from '../types';
  * API Documentation: https://open-meteo.com/
  */
 export class WeatherService {
-  private geocodingUrl = 'https://geocoding-api.open-meteo.com/v1/search';
-  private weatherUrl = 'https://api.open-meteo.com/v1/forecast';
+  private geocodingUrl = "https://geocoding-api.open-meteo.com/v1/search";
+  private weatherUrl = "https://api.open-meteo.com/v1/forecast";
 
   constructor() {
-    console.log('✅ Using Open-Meteo API (no API key required)');
+    console.log("✅ Using Open-Meteo API");
   }
 
   /**
    * Get coordinates for a location using Open-Meteo Geocoding API
    */
-  private async getCoordinates(location: string): Promise<{ lat: number; lon: number; name: string }> {
+  private async getCoordinates(
+    location: string
+  ): Promise<{ lat: number; lon: number; name: string }> {
     try {
       const response = await axios.get(this.geocodingUrl, {
         params: {
           name: location,
           count: 1,
-          language: 'en',
-          format: 'json'
-        }
+          language: "en",
+          format: "json",
+        },
       });
 
       if (!response.data.results || response.data.results.length === 0) {
@@ -38,7 +40,7 @@ export class WeatherService {
       return {
         lat: result.latitude,
         lon: result.longitude,
-        name: result.name
+        name: result.name,
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -51,36 +53,39 @@ export class WeatherService {
   /**
    * Get weather data using Open-Meteo API
    */
-  async getWeather(location: string, units: 'celsius' | 'fahrenheit' = 'celsius'): Promise<WeatherData> {
+  async getWeather(
+    location: string,
+    units: "celsius" | "fahrenheit" = "celsius"
+  ): Promise<WeatherData> {
     try {
       // Step 1: Get coordinates for the location
       const { lat, lon, name } = await this.getCoordinates(location);
 
       // Step 2: Get weather data
-      const tempUnit = units === 'celsius' ? 'celsius' : 'fahrenheit';
-      const windUnit = units === 'celsius' ? 'kmh' : 'mph';
+      const tempUnit = units === "celsius" ? "celsius" : "fahrenheit";
+      const windUnit = units === "celsius" ? "kmh" : "mph";
 
       const response = await axios.get(this.weatherUrl, {
         params: {
           latitude: lat,
           longitude: lon,
           current: [
-            'temperature_2m',
-            'weather_code',
-            'wind_speed_10m',
-            'snowfall'
-          ].join(','),
+            "temperature_2m",
+            "weather_code",
+            "wind_speed_10m",
+            "snowfall",
+          ].join(","),
           daily: [
-            'temperature_2m_max',
-            'temperature_2m_min',
-            'weather_code',
-            'snowfall_sum'
-          ].join(','),
+            "temperature_2m_max",
+            "temperature_2m_min",
+            "weather_code",
+            "snowfall_sum",
+          ].join(","),
           temperature_unit: tempUnit,
           wind_speed_unit: windUnit,
           forecast_days: 7,
-          timezone: 'auto'
-        }
+          timezone: "auto",
+        },
       });
 
       const current = response.data.current;
@@ -97,7 +102,7 @@ export class WeatherService {
           tempHigh: Math.round(daily.temperature_2m_max[i]),
           tempLow: Math.round(daily.temperature_2m_min[i]),
           snowfall: Math.round(daily.snowfall_sum[i] || 0),
-          condition: this.mapWeatherCode(daily.weather_code[i])
+          condition: this.mapWeatherCode(daily.weather_code[i]),
         });
       }
 
@@ -107,13 +112,15 @@ export class WeatherService {
         condition: condition,
         snowfall: Math.round(current.snowfall || 0),
         windSpeed: Math.round(current.wind_speed_10m),
-        forecast: dailyForecasts
+        forecast: dailyForecasts,
       };
 
       return weatherData;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(`Weather API error: ${error.response?.data?.reason || error.message}`);
+        throw new Error(
+          `Weather API error: ${error.response?.data?.reason || error.message}`
+        );
       }
       throw error;
     }
@@ -125,66 +132,70 @@ export class WeatherService {
    */
   private mapWeatherCode(code: number): string {
     const weatherCodes: { [key: number]: string } = {
-      0: 'Clear',
-      1: 'Mainly Clear',
-      2: 'Partly Cloudy',
-      3: 'Overcast',
-      45: 'Foggy',
-      48: 'Foggy',
-      51: 'Light Drizzle',
-      53: 'Drizzle',
-      55: 'Heavy Drizzle',
-      61: 'Light Rain',
-      63: 'Rain',
-      65: 'Heavy Rain',
-      66: 'Freezing Rain',
-      67: 'Heavy Freezing Rain',
-      71: 'Light Snow',
-      73: 'Snow',
-      75: 'Heavy Snow',
-      77: 'Snow Grains',
-      80: 'Light Showers',
-      81: 'Showers',
-      82: 'Heavy Showers',
-      85: 'Light Snow Showers',
-      86: 'Snow Showers',
-      95: 'Thunderstorm',
-      96: 'Thunderstorm with Hail',
-      99: 'Heavy Thunderstorm with Hail'
+      0: "Clear",
+      1: "Mainly Clear",
+      2: "Partly Cloudy",
+      3: "Overcast",
+      45: "Foggy",
+      48: "Foggy",
+      51: "Light Drizzle",
+      53: "Drizzle",
+      55: "Heavy Drizzle",
+      61: "Light Rain",
+      63: "Rain",
+      65: "Heavy Rain",
+      66: "Freezing Rain",
+      67: "Heavy Freezing Rain",
+      71: "Light Snow",
+      73: "Snow",
+      75: "Heavy Snow",
+      77: "Snow Grains",
+      80: "Light Showers",
+      81: "Showers",
+      82: "Heavy Showers",
+      85: "Light Snow Showers",
+      86: "Snow Showers",
+      95: "Thunderstorm",
+      96: "Thunderstorm with Hail",
+      99: "Heavy Thunderstorm with Hail",
     };
 
-    return weatherCodes[code] || 'Unknown';
+    return weatherCodes[code] || "Unknown";
   }
 
-  async getSkiConditions(resortLocation: string): Promise<WeatherData & { skiConditions: string }> {
+  async getSkiConditions(
+    resortLocation: string
+  ): Promise<WeatherData & { skiConditions: string }> {
     const weather = await this.getWeather(resortLocation);
 
     // Analyze conditions for skiing
-    let skiConditions = 'Unknown';
+    let skiConditions = "Unknown";
 
     if (weather.temperature < -10) {
-      skiConditions = 'Very cold - dress warmly. Good snow conditions.';
+      skiConditions = "Very cold - dress warmly. Good snow conditions.";
     } else if (weather.temperature < 0) {
-      skiConditions = 'Excellent skiing conditions with good snow quality.';
+      skiConditions = "Excellent skiing conditions with good snow quality.";
     } else if (weather.temperature < 5) {
-      skiConditions = 'Good conditions, though snow may be softer in afternoon.';
+      skiConditions =
+        "Good conditions, though snow may be softer in afternoon.";
     } else {
-      skiConditions = 'Warm conditions - snow may be slushy. Best skiing in morning.';
+      skiConditions =
+        "Warm conditions - snow may be slushy. Best skiing in morning.";
     }
 
     if (weather.snowfall > 10) {
-      skiConditions += ' Heavy fresh snowfall - powder conditions!';
+      skiConditions += " Heavy fresh snowfall - powder conditions!";
     } else if (weather.snowfall > 0) {
-      skiConditions += ' Fresh snow expected.';
+      skiConditions += " Fresh snow expected.";
     }
 
     if (weather.windSpeed > 30) {
-      skiConditions += ' WARNING: High winds - some lifts may be closed.';
+      skiConditions += " WARNING: High winds - some lifts may be closed.";
     }
 
     return {
       ...weather,
-      skiConditions
+      skiConditions,
     };
   }
 }

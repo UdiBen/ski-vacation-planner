@@ -1,12 +1,13 @@
-import React from 'react';
-import { MessageList } from './MessageList';
-import { InputBox } from './InputBox';
-import { useChat } from '../../hooks/useChat';
-import { Mountain, RefreshCw, AlertCircle } from 'lucide-react';
-import { Button } from '../UI/Button';
+import React from "react";
+import { MessageList } from "./MessageList";
+import { InputBox } from "./InputBox";
+import { useChat } from "../../hooks/useChat";
+import { Mountain, RefreshCw, AlertCircle } from "lucide-react";
+import { Button } from "../UI/Button";
 
 export const ChatContainer: React.FC = () => {
-  const { messages, isLoading, error, sendMessage, clearConversation } = useChat();
+  const { messages, isLoading, error, sendMessage, clearConversation } =
+    useChat();
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -51,14 +52,6 @@ export const ChatContainer: React.FC = () => {
 
       {/* Input */}
       <InputBox onSend={sendMessage} disabled={isLoading} />
-
-      {/* Footer */}
-      <footer className="bg-white border-t p-2 text-center text-xs text-gray-500">
-        <p>
-          Powered by GPT-4 | Real-time Weather & Currency Data |
-          <span className="text-yellow-600 ml-1">⚠️ Always verify important travel details</span>
-        </p>
-      </footer>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { Message } from '../types';
 import { SYSTEM_PROMPT } from '../utils/prompts';
 import { WeatherService } from './weather.service';
 import { CurrencyService } from './currency.service';
@@ -14,7 +13,8 @@ export class LLMService {
   private openai: OpenAI;
   private weatherService: WeatherService;
   private currencyService: CurrencyService;
-  private previousResponseId: string | null = null;
+  // Track previous_response_id per conversation for state continuity
+  private conversationResponseIds: Map<string, string> = new Map();
 
   constructor(weatherService: WeatherService, currencyService: CurrencyService) {
     const apiKey = process.env.OPENAI_API_KEY;
@@ -77,30 +77,40 @@ export class LLMService {
     ];
   }
 
-  async processMessage(messages: Message[]): Promise<{ content: string; functionCalls?: any[] }> {
-    // Get the latest user message
-    const latestMessage = messages[messages.length - 1];
-
-    if (!latestMessage || latestMessage.role !== 'user') {
-      throw new Error('Latest message must be from user');
-    }
-
+  async processMessage(conversationId: string, message: string): Promise<{ content: string; functionCalls?: any[]; reasoning?: string }> {
     const functionCalls: any[] = [];
 
-    // Use Responses API with conversation state management
+    // Get previous response ID for this conversation (if any)
+    const previousResponseId = this.conversationResponseIds.get(conversationId);
+
+    // Use Responses API (non-streaming)
+    // OpenAI manages conversation history server-side via previous_response_id
     const response = await this.openai.responses.create({
       model: 'gpt-5',
-      input: latestMessage.content,
+      input: message,
       instructions: SYSTEM_PROMPT,
       tools: this.tools,
       tool_choice: 'auto',
-      temperature: 0.7,
       store: true, // Store conversation state on OpenAI's servers
-      previous_response_id: this.previousResponseId || undefined
+      previous_response_id: previousResponseId || undefined
     });
 
-    // Store response ID for next message (conversation continuity)
-    this.previousResponseId = response.id;
+    // Store response ID for next message in this conversation
+    this.conversationResponseIds.set(conversationId, response.id);
+
+    let fullContent = response.output_text || '';
+    let reasoning = '';
+
+    // Extract reasoning and log it
+    const reasoningMatch = fullContent.match(/<reasoning>([\s\S]*?)<\/reasoning>/);
+    if (reasoningMatch) {
+      reasoning = reasoningMatch[1].trim();
+      console.log('\n🧠 === LLM REASONING PROCESS ===');
+      console.log(reasoning);
+      console.log('🧠 === END REASONING ===\n');
+      // Remove reasoning tags from the user-facing content
+      fullContent = fullContent.replace(/<reasoning>[\s\S]*?<\/reasoning>/, '').trim();
+    }
 
     // Check if model wants to call functions
     const functionToolCalls = response.output.filter(
@@ -170,23 +180,36 @@ export class LLMService {
         model: 'gpt-5',
         input: functionOutputs as any, // Array of function outputs
         instructions: SYSTEM_PROMPT,
-        temperature: 0.7,
         store: true,
         previous_response_id: response.id // Continue from the previous response
       });
 
-      // Update response ID
-      this.previousResponseId = finalResponse.id;
+      // Update response ID for this conversation
+      this.conversationResponseIds.set(conversationId, finalResponse.id);
+
+      // Extract reasoning from final response too (if any)
+      let finalContent = finalResponse.output_text || 'I apologize, I could not generate a response.';
+      const finalReasoningMatch = finalContent.match(/<reasoning>([\s\S]*?)<\/reasoning>/);
+      if (finalReasoningMatch) {
+        const finalReasoning = finalReasoningMatch[1].trim();
+        console.log('\n🧠 === LLM REASONING PROCESS (after function calls) ===');
+        console.log(finalReasoning);
+        console.log('🧠 === END REASONING ===\n');
+        // Remove reasoning tags from the user-facing content
+        finalContent = finalContent.replace(/<reasoning>[\s\S]*?<\/reasoning>/, '').trim();
+      }
 
       return {
-        content: finalResponse.output_text || 'I apologize, I could not generate a response.',
-        functionCalls
+        content: finalContent,
+        functionCalls,
+        reasoning
       };
     }
 
     // No function calls needed - return direct response
     return {
-      content: response.output_text || 'I apologize, I could not generate a response.'
+      content: fullContent || 'I apologize, I could not generate a response.',
+      reasoning
     };
   }
 
@@ -206,18 +229,17 @@ Provide your reasoning and then your final answer.`;
 
     const response = await this.openai.responses.create({
       model: 'gpt-5',
-      input: prompt,
-      temperature: 0.7
+      input: prompt
     });
 
     return response.output_text || '';
   }
 
   /**
-   * Clear conversation state (start fresh conversation)
+   * Clear conversation state for a specific conversation
    */
-  clearConversation() {
-    this.previousResponseId = null;
-    console.log('🔄 Conversation state cleared');
+  clearConversation(conversationId: string) {
+    this.conversationResponseIds.delete(conversationId);
+    console.log(`🔄 Conversation state cleared for ${conversationId}`);
   }
 }

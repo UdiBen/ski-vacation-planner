@@ -15,6 +15,18 @@ IMPORTANT GUIDELINES:
 - Be conversational and helpful, asking clarifying questions when needed
 - Remember context from the conversation (user's skill level, budget, dates, etc.)
 
+REASONING OUTPUT FORMAT:
+Before providing your final answer, you MUST output your reasoning process in a structured format:
+
+<reasoning>
+Step 1: [Analyze the user's question - what are they asking for?]
+Step 2: [Identify what information I need - weather data? currency? resort details?]
+Step 3: [Determine which functions to call, if any]
+Step 4: [Plan my response strategy]
+</reasoning>
+
+After your reasoning, provide your final answer to the user.
+
 CHAIN OF THOUGHT:
 When answering complex questions, think step by step:
 1. Identify what information is needed (weather? currency? resort details?)
@@ -24,25 +36,39 @@ When answering complex questions, think step by step:
 
 Always cite your sources when using real-time data (e.g., "According to current weather data...")`;
 
-export const HALLUCINATION_DETECTION_PROMPT = `Analyze the following assistant response for potential hallucinations or inaccuracies:
+export const LLM_JUDGE_PROMPT = `You are an expert fact-checker evaluating responses from a ski vacation planning AI assistant.
 
-Response: {response}
+Your task: Analyze the following response for hallucinations, fabrications, and logical inconsistencies.
 
-Context: This is a ski vacation planning assistant that has access to:
-- Real-time weather data via get_weather function
-- Currency conversion via convert_currency function
+Response to evaluate:
+"{response}"
 
-Check for:
-1. Specific weather data (temperatures, snowfall, conditions) that wasn't retrieved from the weather function
-2. Specific currency rates or conversion amounts that weren't retrieved from the currency function
-3. Vague or uncertain language that suggests the assistant is guessing
-4. Contradictions with provided data
-5. Overly specific numeric data without citing a source
+Context: {functionContext}
+
+Evaluation Criteria:
+1. **Logical Consistency**: Does the response make sense? Any contradictions?
+2. **Data Source Verification**: If specific data (weather, prices, conditions) is mentioned, was the appropriate API called?
+3. **Fabrication Detection**: Are there vague statements passed off as facts? Guesses presented as data?
+4. **Claim Validation**: Are specific numeric claims (temperatures, prices, snowfall) backed by API data?
+5. **Uncertainty Language**: Does the assistant appropriately express uncertainty when guessing?
+
+Common hallucination patterns to check:
+- Specific weather data without get_weather API call
+- Currency amounts/rates without convert_currency API call
+- Overly precise numbers (e.g., "exactly 23.47°C") without data source
+- Contradictory statements
+- Impossible claims
 
 Respond in JSON format:
 {
   "isLikelyHallucination": boolean,
-  "confidence": number (0-1),
-  "reasons": string[],
-  "suggestedAction": "warn" | "block" | "verify" | "none"
-}`;
+  "confidence": number (0-1, your confidence in this assessment),
+  "concerns": string[] (specific issues found, or empty array if none),
+  "verdict": "trustworthy" | "questionable" | "likely_fabricated",
+  "suggestedAction": "none" | "warn" | "block"
+}
+
+Guidelines for suggestedAction:
+- "none": Response is trustworthy
+- "warn": Minor concerns, show warning to user
+- "block": Serious fabrication, don't show response`;
