@@ -13,13 +13,12 @@ services:
       - key: PORT
         value: 3005
       - key: OPENAI_API_KEY
-        sync: false  # This will prompt you to enter it in Render dashboard
+        sync: false # This will prompt you to enter it in Render dashboard
 
   # Frontend Static Site
   - type: web
     name: ski-planner-frontend
     env: static
-    region: oregon
     plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
