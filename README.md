@@ -405,72 +405,61 @@ npm run build
 npm start
 ```
 
-## 🚀 Deployment
+## 🚀 Deployment (FREE)
 
-### Deploy to Render (Recommended - Free & Easy)
+Deploy to **Vercel + Render** for free hosting!
 
-This project includes a `render.yaml` configuration for one-click deployment to Render.com.
+### Quick Deploy (15 minutes total)
 
-#### Prerequisites:
-- GitHub account
-- Render account (free at https://render.com)
-- OpenAI API key
+#### Step 1: Deploy Frontend to Vercel
 
-#### Steps:
-
-1. **Push your code to GitHub**
-   ```bash
-   git add .
-   git commit -m "Ready for deployment"
-   git push origin main
-   ```
-
-2. **Connect to Render**
-   - Go to https://dashboard.render.com
-   - Click "New" → "Blueprint"
-   - Connect your GitHub repository
-   - Render will automatically detect the `render.yaml` file
-
-3. **Configure Environment Variables**
-   - Render will prompt you for the `OPENAI_API_KEY`
-   - Enter your OpenAI API key
-   - Click "Apply"
-
-4. **Deploy!**
-   - Render will automatically:
-     - Deploy the backend API
-     - Deploy the frontend static site
-     - Connect them together
-   - First deployment takes ~5 minutes
-
-5. **Access Your App**
-   - Frontend URL: `https://ski-planner-frontend.onrender.com`
-   - Backend API: `https://ski-planner-backend.onrender.com`
-
-#### Notes:
-- Free tier includes:
-  - Automatic HTTPS
-  - Automatic deploys on git push
-  - 750 hours/month (enough for 24/7 uptime)
-- Backend will spin down after 15 minutes of inactivity (first request may be slow)
-
-### Alternative: Deploy to Vercel (Frontend) + Render (Backend)
-
-If you prefer to deploy frontend and backend separately:
-
-#### Frontend (Vercel):
 ```bash
 cd frontend
 npx vercel
 ```
 
-#### Backend (Render):
-1. Create new Web Service on Render
-2. Connect GitHub repository
-3. Configure:
-   - Build Command: `cd backend && npm install && npm run build`
-   - Start Command: `cd backend && npm start`
-   - Add `OPENAI_API_KEY` environment variable
+Follow the prompts (accept defaults). Your frontend will be live at `https://your-project.vercel.app`
+
+#### Step 2: Deploy Backend to Render
+
+1. Go to **https://dashboard.render.com**
+2. Sign in with GitHub
+3. Click "New +" → "Web Service"
+4. Connect your repository
+5. Configure:
+   - Root Directory: `backend`
+   - Build Command: `npm install && npm run build`
+   - Start Command: `npm start`
+   - Instance Type: **Free**
+6. Add environment variable: `OPENAI_API_KEY`
+
+Backend will be live at `https://your-app.onrender.com`
+
+#### Step 3: Connect Them
+
+1. In Vercel dashboard → Settings → Environment Variables
+2. Add: `VITE_API_URL` = Your Render backend URL
+3. Redeploy frontend
+
+**Done!** Your app is now live! 🎉
+
+### Detailed Instructions
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for:
+- Step-by-step guide with screenshots
+- Troubleshooting tips
+- Alternative free hosting options
+- Cost breakdown ($0/month)
+
+### Cost Summary
+
+| Service | Free Tier | Cost |
+|---------|-----------|------|
+| Vercel (Frontend) | 100 GB bandwidth/month | $0 |
+| Render (Backend) | 750 hours/month | $0 |
+| **Total** | | **$0/month** |
+
+*Note: Render free tier spins down after 15min idle (30-60s cold start). You only pay for OpenAI API usage (~$0.10-0.50/day)*
 
 ## 🔧 Configuration
 
