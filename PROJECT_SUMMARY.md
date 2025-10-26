@@ -10,7 +10,7 @@ The **Ski Vacation Planner** is an intelligent conversational AI assistant built
 - **Runtime:** Node.js 18+
 - **Language:** TypeScript
 - **Framework:** Express.js
-- **LLM:** OpenAI GPT-4o
+- **LLM:** OpenAI GPT-5
 - **APIs:**
   - Open-Meteo API (weather data)
   - Exchange Rate API (currency conversion)
@@ -155,7 +155,7 @@ User: "How much in local currency?"
 │                   │                               │
 │  ┌────────────────▼───────────────────────────┐  │
 │  │  LLM Service (Function Calling)            │  │
-│  │  • OpenAI GPT-4o integration          │  │
+│  │  • OpenAI GPT-5 integration          │  │
 │  │  • Tool definitions and routing            │  │
 │  │  • Response synthesis                      │  │
 │  └──────┬──────────────────────┬───────────────┘ │
@@ -269,7 +269,7 @@ npm run dev
 
 ### ✅ Technical Implementation
 - **Language:** TypeScript (Node.js + React)
-- **LLM:** OpenAI GPT-4o via official SDK
+- **LLM:** OpenAI GPT-5 via official SDK
 - **Interface:** React web UI (exceeds CLI requirement)
 - **Architecture:** RESTful API with proper separation of concerns
 

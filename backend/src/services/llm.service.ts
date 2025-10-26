@@ -84,7 +84,7 @@ export class LLMService {
     ];
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-5',
       messages: openAIMessages,
       tools: this.tools,
       tool_choice: 'auto',
@@ -153,7 +153,7 @@ export class LLMService {
 
       // Get final response with function results
       const finalResponse = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-5',
         messages: openAIMessages,
         temperature: 0.7
       });
@@ -185,7 +185,7 @@ Think through this step by step:
 Provide your reasoning and then your final answer.`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-5',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7
     });
