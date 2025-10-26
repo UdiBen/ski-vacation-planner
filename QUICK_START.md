@@ -42,17 +42,23 @@ Navigate to: http://localhost:3000
 # Install everything
 npm run install:all
 
-# Start both backend and frontend
+# Start both backend and frontend (with colored labels!)
 npm run dev
 
-# Start backend only
+# Start backend only (port 3001)
 npm run dev:backend
 
-# Start frontend only
+# Start frontend only (port 3000)
 npm run dev:frontend
 
 # Build for production
 npm run build
+
+# Clean all node_modules and build files
+npm run clean
+
+# Test API health
+npm run test:api
 ```
 
 ## Troubleshooting

@@ -4,11 +4,15 @@
   "description": "Intelligent Ski Vacation Planning Assistant with LLM and API Integration",
   "scripts": {
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"bgBlue.bold,bgMagenta.bold\" \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "build": "cd backend && npm run build && cd ../frontend && npm run build",
-    "start": "cd backend && npm start"
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "clean": "rm -rf node_modules backend/node_modules frontend/node_modules backend/dist frontend/dist",
+    "test:api": "curl http://localhost:3001/health"
   },
   "keywords": ["llm", "chatbot", "ski", "travel", "assistant"],
   "author": "",
