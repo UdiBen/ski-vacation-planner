@@ -481,14 +481,22 @@ PORT=3005                      # Optional, defaults to 3005
 - Heuristic thresholds
 - Detection patterns
 
-## 📸 Sample Conversation Transcripts
+## 📸 Example Screenshots & Transcripts
 
-See `docs/sample-conversations.md` for example interactions demonstrating:
+The `docs/` folder contains visual examples of the application in action:
 
-- Weather queries with API integration
-- Currency conversions
-- Multi-turn planning conversations
-- Hallucination detection in action
-- Context-aware follow-ups
+### Sample Conversations (with Screenshots)
+
+- **[docs/1.pdf](docs/1.pdf)** - Example conversation demonstrating:
+  - Real-time weather queries with API integration
+  - Multi-turn conversation with context awareness
+  - Function calling in action
+  - Clean UI with data source indicators
+
+- **[docs/2.pdf](docs/2.pdf)** - Additional examples showing:
+  - Currency conversion queries
+  - Complex planning conversations
+  - Hallucination detection and warnings
+  - Error handling and graceful degradation
 
 ---
