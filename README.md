@@ -94,7 +94,13 @@ cp .env.example .env
 cd ..
 ```
 
-4. **Start the application**
+4. **Verify setup (optional but recommended)**
+```bash
+./verify-setup.sh
+```
+This script checks that all dependencies are installed and API keys are configured.
+
+5. **Start the application**
 ```bash
 npm run dev
 ```
@@ -430,10 +436,6 @@ PORT=3001                      # Optional, defaults to 3001
 - Real-time data fusion
 - Accurate attribution
 - Error handling
-
-## 🤝 Contributing
-
-This is an academic project. Contributions welcome for educational purposes.
 
 ## 📝 License
 
