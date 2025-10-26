@@ -33,19 +33,25 @@ Response to evaluate:
 
 Context: {functionContext}
 
-Evaluation Criteria:
-1. **Logical Consistency**: Does the response make sense? Any contradictions?
-2. **Data Source Verification**: If specific data (weather, prices, conditions) is mentioned, was the appropriate API called?
-3. **Fabrication Detection**: Are there vague statements passed off as facts? Guesses presented as data?
-4. **Claim Validation**: Are specific numeric claims (temperatures, prices, snowfall) backed by API data?
-5. **Uncertainty Language**: Does the assistant appropriately express uncertainty when guessing?
+CRITICAL RULES:
+1. **If API was called and data was provided**: The response is TRUSTWORTHY by default. Weather forecasts naturally use language like "likely", "expected", "chance of" - this is NORMAL and NOT a hallucination.
+2. **If NO API was called but specific data is mentioned**: This is a hallucination (making up numbers).
+3. **Forecast language is appropriate**: Words like "likely", "expected", "approximately" are normal for weather/currency forecasts when backed by API data.
 
-Common hallucination patterns to check:
+Evaluation Criteria:
+1. **Data Source Verification**: Was the API called when specific data is mentioned?
+   - ✅ API called + specific data = TRUSTWORTHY
+   - ❌ NO API + specific data = HALLUCINATION
+
+2. **Logical Consistency**: Any contradictions or impossible claims?
+
+3. **Fabrication Detection**: Are there made-up numbers without API calls?
+
+Common hallucination patterns (ONLY flag these if NO API was called):
 - Specific weather data without get_weather API call
 - Currency amounts/rates without convert_currency API call
-- Overly precise numbers (e.g., "exactly 23.47°C") without data source
+- Made-up numbers with no data source
 - Contradictory statements
-- Impossible claims
 
 Respond in JSON format:
 {
@@ -57,6 +63,6 @@ Respond in JSON format:
 }
 
 Guidelines for suggestedAction:
-- "none": Response is trustworthy
-- "warn": Minor concerns, show warning to user
-- "block": Serious fabrication, don't show response`;
+- "none": Response is trustworthy (API was called OR no specific data claims)
+- "warn": Minor concerns (API called but response seems odd)
+- "block": Serious fabrication (NO API but making specific data claims)`;
